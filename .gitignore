@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.egg-info/
+
+# Virtual environment
+venv/
+.venv/
+env/
+.env/
+*.venv/
+
+# Dataset
+data/raw/*
+data/processed/*
+data/frames/*
+data/audio/*
+data/smoke_test/*
+
+# Model files
+models/checkpoints/*
+models/pretrained/*
+models/exported/*
+
+# Outputs
+outputs/*
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log.venv/

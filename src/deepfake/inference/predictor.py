@@ -1,0 +1,220 @@
+"""
+predictor.py
+End-to-end inference: load a trained checkpoint, run a video through
+preprocessing -> model -> classification -> temporal localization ->
+visual/audio explanations -> human-readable report. This is the
+"INFERENCE" + "XAI MODULE" + "HUMAN-READABLE REPORT" boxes from the
+original architecture diagram, wired together into one call.
+"""
+
+from pathlib import Path
+
+import torch
+
+from deepfake.data.audio_window import AudioWindowExtractor
+from deepfake.data.face_detector import FaceDetector
+from deepfake.data.preprocessing import FramePreprocessor
+from deepfake.data.video_loader import VideoLoader
+from deepfake.explainability.audio_explainer import AudioExplainer
+from deepfake.explainability.report import DeepfakeReport, build_report
+from deepfake.explainability.temporal_explainer import TemporalExplainer
+from deepfake.explainability.visual_explainer import VisualExplainer
+from deepfake.explainability.visualize import (
+    save_audio_importance_plot,
+    save_temporal_timeline_plot,
+    save_visual_saliency,
+)
+from deepfake.models.deepfake_detector import DeepfakeDetector
+from deepfake.training.checkpoint import CheckpointManager
+
+
+class DeepfakePredictor:
+    """
+    Loads a trained (or, for smoke-testing, untrained) DeepfakeDetector
+    and runs the complete pipeline on a single video file.
+    """
+
+    def __init__(
+        self,
+        checkpoint_path: str | Path | None = None,
+        device: str = "cpu",
+        num_frames: int = 16,
+        image_size: int = 224,
+        face_margin: float = 0.2,
+        audio_sample_rate: int = 16000,
+        audio_duration_seconds: float = 4.0,
+        pretrained: bool = True,
+    ):
+        self.device = device
+        self.num_frames = num_frames
+        self.audio_sample_rate = audio_sample_rate
+        self.audio_duration_seconds = audio_duration_seconds
+
+        self.model = DeepfakeDetector(pretrained=pretrained).to(device)
+
+        if checkpoint_path is not None:
+            checkpoint_manager = CheckpointManager(
+                checkpoint_dir=str(Path(checkpoint_path).parent)
+            )
+            checkpoint_manager.load(
+                path=str(checkpoint_path),
+                model=self.model,
+                device=device,
+            )
+
+        self.model.eval()
+
+        self.face_detector = FaceDetector()
+        self.frame_preprocessor = FramePreprocessor(image_size=image_size)
+        self.face_margin = face_margin
+        self.audio_extractor = AudioWindowExtractor(
+            sample_rate=audio_sample_rate,
+            duration_seconds=audio_duration_seconds,
+        )
+
+        self.visual_explainer = VisualExplainer(self.model.visual_encoder)
+        self.audio_explainer = AudioExplainer(self.model.audio_encoder)
+        self.temporal_explainer = TemporalExplainer(self.model)
+
+    def _load_frames_and_audio(self, video_path: Path):
+        with VideoLoader(video_path) as loader:
+            raw_frames = loader.sample_frames(self.num_frames)
+            metadata = loader.get_metadata()
+
+        face_frames = []
+        for frame in raw_frames:
+            rgb_frame = frame[:, :, ::-1]
+            detections = self.face_detector.detect(rgb_frame)
+
+            if detections:
+                best = max(detections, key=lambda d: d.confidence)
+                face_frames.append(
+                    self.face_detector.crop_face(
+                        frame, best, margin=self.face_margin
+                    )
+                )
+            else:
+                face_frames.append(frame)
+
+        frames_tensor = self.frame_preprocessor.process_frames(face_frames)
+
+        try:
+            audio_tensor = self.audio_extractor.extract(video_path)
+        except Exception:
+            num_samples = int(
+                self.audio_sample_rate * self.audio_duration_seconds
+            )
+            audio_tensor = torch.zeros(num_samples, dtype=torch.float32)
+
+        sampled_fps = None
+        if metadata["fps"] > 0 and metadata["frame_count"] > 0:
+            video_duration = metadata["frame_count"] / metadata["fps"]
+            if video_duration > 0:
+                sampled_fps = self.num_frames / video_duration
+
+        return frames_tensor, audio_tensor, sampled_fps
+
+    @torch.no_grad()
+    def predict(
+        self,
+        video_path: str | Path,
+        compute_explanations: bool = True,
+        save_visualizations_dir: str | Path | None = None,
+    ) -> DeepfakeReport:
+        """
+        Run the full pipeline on one video.
+
+        Args:
+            video_path: path to a video file.
+            compute_explanations: if False, skip the (slower) visual
+                and audio attention-rollout explanations and only
+                compute the classification + temporal localization.
+            save_visualizations_dir: if given (and compute_explanations
+                is True), save three PNGs here: a visual attention
+                heatmap over the most suspicious frame, an audio
+                attention-over-time plot, and the per-frame fake-
+                probability timeline.
+
+        Returns:
+            A DeepfakeReport. If images were saved, their paths are
+            in report.visualization_paths.
+        """
+        video_path = Path(video_path)
+
+        frames_tensor, audio_tensor, sampled_fps = (
+            self._load_frames_and_audio(video_path)
+        )
+
+        frames_tensor = frames_tensor.to(self.device)
+        audio_tensor = audio_tensor.to(self.device)
+
+        probabilities = self.model.predict_proba(
+            frames_tensor.unsqueeze(0),
+            audio_tensor.unsqueeze(0),
+        )
+        fake_probability = probabilities[0, 1].item()
+
+        temporal_result = self.temporal_explainer.explain(
+            frames_tensor, audio_tensor, fps=sampled_fps
+        )
+        per_frame_probs = temporal_result["fake_probability_per_frame"]
+
+        visual_saliency_available = False
+        audio_importance_available = False
+        visualization_paths = None
+
+        if compute_explanations:
+            visual_saliency = self.visual_explainer.explain(frames_tensor)
+            visual_saliency_available = True
+
+            audio_result = self.audio_explainer.explain(
+                audio_tensor, duration_seconds=self.audio_duration_seconds
+            )
+            audio_importance_available = True
+
+            if save_visualizations_dir is not None:
+                save_dir = Path(save_visualizations_dir)
+                most_suspicious_idx = int(per_frame_probs.argmax().item())
+
+                visualization_paths = {
+                    "visual_attention": str(
+                        save_visual_saliency(
+                            frames_tensor[most_suspicious_idx],
+                            visual_saliency[most_suspicious_idx],
+                            save_dir / "visual_attention.png",
+                        )
+                    ),
+                    "audio_attention": str(
+                        save_audio_importance_plot(
+                            audio_result["importance"],
+                            audio_result["times_seconds"],
+                            save_dir / "audio_attention.png",
+                        )
+                    ),
+                    "temporal_timeline": str(
+                        save_temporal_timeline_plot(
+                            per_frame_probs.tolist(),
+                            temporal_result.get("times_seconds"),
+                            save_dir / "temporal_timeline.png",
+                        )
+                    ),
+                }
+
+        frame_times = temporal_result.get("times_seconds")
+
+        report = build_report(
+            video_path=video_path,
+            fake_probability=fake_probability,
+            fake_probability_per_frame=per_frame_probs.tolist(),
+            frame_times_seconds=(
+                frame_times.tolist() if frame_times is not None else None
+            ),
+            visual_saliency_available=visual_saliency_available,
+            audio_importance_available=audio_importance_available,
+        )
+        report.visualization_paths = visualization_paths
+
+        return report
+
+    def close(self):
+        self.face_detector.close()
