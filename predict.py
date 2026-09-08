@@ -12,10 +12,12 @@ Usage:
 """
 
 import argparse
+from pathlib import Path
 
 import torch
 
 from deepfake.inference.predictor import DeepfakePredictor
+
 
 
 def main():
@@ -85,6 +87,17 @@ def main():
     print()
     print(report.summary())
 
+    if not args.no_explanations and args.save_visualizations:
+        html_path = Path(args.save_visualizations) / "report.html"
+        generated_html = report.generate_html_report(str(html_path))
+        abs_html = Path(generated_html).resolve()
+        url_path = str(abs_html).replace("\\", "/")
+        print(f"\n[+] Interactive Visual Report generated:")
+        print(f"    file:///{url_path}")
+        print(f"    (Open this file in your browser to view heatmaps & interactive charts)")
+
+
 
 if __name__ == "__main__":
     main()
+
