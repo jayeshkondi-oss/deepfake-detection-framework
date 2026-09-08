@@ -36,6 +36,15 @@ def main():
         "(classification + temporal localization still run).",
     )
     parser.add_argument(
+        "--threshold",
+        type=float,
+        default=0.65,
+        help="Confidence threshold for FAKE verdict (default: 0.65). "
+        "The model's fake-probability must exceed this value to label "
+        "a video as FAKE. Lower = more sensitive, higher = more specific. "
+        "Range: 0.0 to 1.0.",
+    )
+    parser.add_argument(
         "--save_visualizations", type=str, default="outputs",
         help="Directory to save the visual attention heatmap, audio "
         "attention plot, and fake-probability timeline as PNG images "
@@ -60,6 +69,7 @@ def main():
         # there's no reason to spend time downloading pretrained
         # encoder weights first just to immediately replace them.
         pretrained=False,
+        fake_threshold=args.threshold,
     )
 
     print(f"Analyzing {args.video} ...")

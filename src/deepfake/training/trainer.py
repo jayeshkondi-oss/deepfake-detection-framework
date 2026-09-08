@@ -5,6 +5,12 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
+try:
+    from tqdm import tqdm
+    _TQDM_AVAILABLE = True
+except ImportError:
+    _TQDM_AVAILABLE = False
+
 from .metrics import calculate_metrics
 from .checkpoint import CheckpointManager
 
@@ -25,6 +31,8 @@ class Trainer:
         mixed_precision: bool = True,
         checkpoint_dir: str = "models/checkpoints",
         early_stopping_patience: int = 5,
+        class_weights: Optional[torch.Tensor] = None,
+        optimizer_param_groups: Optional[list] = None,
     ):
         self.model = model
         self.train_loader = train_loader
@@ -34,13 +42,27 @@ class Trainer:
             device = "cuda" if torch.cuda.is_available() else "cpu"
 
         self.device = torch.device(device)
-
         self.model.to(self.device)
 
-        self.criterion = nn.CrossEntropyLoss()
+        # Use class-weighted loss if provided (fixes FAKE-bias from imbalanced data).
+        # label_smoothing=0.1 prevents overconfident predictions and reduces overfitting.
+        if class_weights is not None:
+            class_weights = class_weights.to(self.device)
+            self.criterion = nn.CrossEntropyLoss(
+                weight=class_weights,
+                label_smoothing=0.1,
+            )
+            print(
+                f"Using weighted loss - REAL weight: {class_weights[0]:.4f}, "
+                f"FAKE weight: {class_weights[1]:.4f} | label_smoothing=0.1"
+            )
+        else:
+            self.criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
 
+        # Support differential learning rates via param groups.
+        params = optimizer_param_groups if optimizer_param_groups else self.model.parameters()
         self.optimizer = torch.optim.AdamW(
-            self.model.parameters(),
+            params,
             lr=learning_rate,
             weight_decay=weight_decay,
         )
@@ -163,80 +185,60 @@ class Trainer:
         total_loss = 0.0
         all_predictions = []
         all_labels = []
+        correct = 0
+        total_samples = 0
 
-        for batch in self.train_loader:
-            frames, audio, labels = self._move_batch_to_device(
-                batch
+        loader = self.train_loader
+        if _TQDM_AVAILABLE:
+            loader = tqdm(
+                self.train_loader,
+                desc="  Train",
+                unit="batch",
+                leave=False,
+                dynamic_ncols=True,
             )
 
-            self.optimizer.zero_grad(
-                set_to_none=True
-            )
+        for batch in loader:
+            frames, audio, labels = self._move_batch_to_device(batch)
+
+            self.optimizer.zero_grad(set_to_none=True)
 
             with torch.amp.autocast(
                 device_type=self.device.type,
                 enabled=self.use_amp,
             ):
-                output = self._forward(
-                    frames,
-                    audio,
-                )
-
+                output = self._forward(frames, audio)
                 logits = self._extract_logits(output)
-
-                loss = self.criterion(
-                    logits,
-                    labels,
-                )
+                loss = self.criterion(logits, labels)
 
             self.scaler.scale(loss).backward()
-
-            self.scaler.step(
-                self.optimizer
-            )
-
+            self.scaler.step(self.optimizer)
             self.scaler.update()
 
-            total_loss += (
-                loss.detach().item()
-                * labels.size(0)
-            )
+            batch_loss = loss.detach().item()
+            total_loss += batch_loss * labels.size(0)
+            total_samples += labels.size(0)
 
-            predictions = torch.argmax(
-                logits.detach(),
-                dim=1,
-            )
+            predictions = torch.argmax(logits.detach(), dim=1)
+            correct += (predictions.cpu() == labels.detach().cpu()).sum().item()
 
-            all_predictions.append(
-                predictions.cpu()
-            )
+            all_predictions.append(predictions.cpu())
+            all_labels.append(labels.detach().cpu())
 
-            all_labels.append(
-                labels.detach().cpu()
-            )
+            if _TQDM_AVAILABLE:
+                loader.set_postfix(
+                    loss=f"{batch_loss:.4f}",
+                    acc=f"{correct / max(total_samples, 1):.3f}",
+                )
 
         if len(self.train_loader.dataset) == 0:
-            raise RuntimeError(
-                "Training dataset is empty."
-            )
+            raise RuntimeError("Training dataset is empty.")
 
-        epoch_loss = (
-            total_loss
-            / len(self.train_loader.dataset)
-        )
+        epoch_loss = total_loss / len(self.train_loader.dataset)
 
-        predictions = torch.cat(
-            all_predictions
-        )
-
-        labels = torch.cat(
-            all_labels
-        )
-
-        metrics = calculate_metrics(
-            predictions,
-            labels,
-        )
+        predictions = torch.cat(all_predictions)
+        labels = torch.cat(all_labels)
+        metrics = calculate_metrics(predictions, labels)
 
         return epoch_loss, metrics
 

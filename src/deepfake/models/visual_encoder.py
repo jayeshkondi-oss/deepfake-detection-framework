@@ -48,8 +48,37 @@ class VisualEncoder(nn.Module):
         self.feature_dim = self.vit.config.hidden_size
 
         if freeze_backbone:
+            # Freeze all ViT parameters first.
             for parameter in self.vit.parameters():
                 parameter.requires_grad = False
+
+        # Optionally unfreeze the last N encoder layers so they can
+        # adapt to deepfake-specific features while the early layers
+        # (general edge/texture detectors) stay frozen.
+        self._unfreeze_last_n = 0
+
+    def unfreeze_last_n_layers(self, n: int) -> None:
+        """Unfreeze the last N transformer encoder blocks + final LayerNorm."""
+        if n <= 0:
+            return
+        self._unfreeze_last_n = n
+        encoder_layers = self.vit.encoder.layer
+        total = len(encoder_layers)
+        unfreeze_from = max(0, total - n)
+        unfrozen_params = 0
+        for i, layer in enumerate(encoder_layers):
+            if i >= unfreeze_from:
+                for p in layer.parameters():
+                    p.requires_grad = True
+                    unfrozen_params += p.numel()
+        # Also unfreeze the final LayerNorm.
+        for p in self.vit.layernorm.parameters():
+            p.requires_grad = True
+            unfrozen_params += p.numel()
+        print(
+            f"VisualEncoder: unfroze last {n}/{total} ViT blocks "
+            f"({unfrozen_params:,} params)"
+        )
 
     def forward(
         self,

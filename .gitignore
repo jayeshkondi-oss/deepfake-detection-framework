@@ -17,11 +17,15 @@ data/processed/*
 data/frames/*
 data/audio/*
 data/smoke_test/*
+data/combined/*
+data/combined_cache/*
+*.pt
 
 # Model files
 models/checkpoints/*
 models/pretrained/*
 models/exported/*
+
 
 # Outputs
 outputs/*

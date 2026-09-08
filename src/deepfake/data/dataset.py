@@ -15,7 +15,10 @@ Expected directory layout:
 
 from pathlib import Path
 
+import random
+
 import torch
+import torchvision.transforms.functional as TF
 from torch.utils.data import Dataset
 
 from deepfake.data.audio_window import AudioWindowExtractor
@@ -47,6 +50,7 @@ class DeepfakeDataset(Dataset):
         face_margin: float = 0.2,
         audio_sample_rate: int = 16000,
         audio_duration_seconds: float = 4.0,
+        augment: bool = False,
     ):
         self.root_dir = Path(root_dir)
 
@@ -63,6 +67,7 @@ class DeepfakeDataset(Dataset):
         self.face_margin = face_margin
         self.audio_sample_rate = audio_sample_rate
         self.audio_duration_seconds = audio_duration_seconds
+        self.augment = augment
 
         self.samples: list[tuple[Path, int]] = []
         for label_name, label_idx in LABEL_TO_IDX.items():
@@ -75,6 +80,41 @@ class DeepfakeDataset(Dataset):
         self._preprocessor = FramePreprocessor(image_size=image_size)
         self._face_detector: FaceDetector | None = None
         self._audio_extractor: AudioWindowExtractor | None = None
+
+    def _augment_frames(self, frames_tensor: torch.Tensor) -> torch.Tensor:
+        """
+        Apply consistent random augmentation across all T frames of a video.
+
+        Augmentations applied the same way to every frame so temporal
+        structure is preserved:
+          - Random horizontal flip (50% chance)
+          - Random brightness + contrast jitter (±20%)
+          - Random rotation ±10 degrees (50% chance)
+
+        Args:
+            frames_tensor: [T, 3, H, W]
+
+        Returns:
+            Augmented tensor of the same shape.
+        """
+        # Decide all random choices once, then apply consistently.
+        do_flip = random.random() < 0.5
+        brightness_factor = random.uniform(0.8, 1.2)
+        contrast_factor = random.uniform(0.8, 1.2)
+        do_rotate = random.random() < 0.5
+        angle = random.uniform(-10, 10)
+
+        augmented = []
+        for frame in frames_tensor:  # frame: [3, H, W]
+            if do_flip:
+                frame = TF.hflip(frame)
+            frame = TF.adjust_brightness(frame, brightness_factor)
+            frame = TF.adjust_contrast(frame, contrast_factor)
+            if do_rotate:
+                frame = TF.rotate(frame, angle)
+            augmented.append(frame)
+
+        return torch.stack(augmented)
 
     def _get_face_detector(self) -> FaceDetector:
         """Lazily create the face detector (and its MediaPipe model)
@@ -129,6 +169,11 @@ class DeepfakeDataset(Dataset):
                 face_frames.append(frame)
 
         frames_tensor = self._preprocessor.process_frames(face_frames)
+
+        # Apply augmentation only during training (augment=True).
+        if self.augment:
+            frames_tensor = self._augment_frames(frames_tensor)
+
         label_tensor = torch.tensor(label, dtype=torch.long)
 
         try:

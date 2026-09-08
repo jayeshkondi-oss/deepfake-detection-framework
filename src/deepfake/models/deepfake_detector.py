@@ -126,7 +126,7 @@ class DeepfakeDetector(nn.Module):
             input_dim=feature_dim,
             hidden_dim=classifier_hidden_dim,
             num_classes=2,
-            dropout=0.3,
+            dropout=0.5,   # increased from 0.3 to fight overfitting
         )
 
     def forward(

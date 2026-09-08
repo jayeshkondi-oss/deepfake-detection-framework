@@ -44,11 +44,16 @@ class DeepfakePredictor:
         audio_sample_rate: int = 16000,
         audio_duration_seconds: float = 4.0,
         pretrained: bool = True,
+        fake_threshold: float = 0.65,
     ):
         self.device = device
         self.num_frames = num_frames
         self.audio_sample_rate = audio_sample_rate
         self.audio_duration_seconds = audio_duration_seconds
+        # Videos must score at least this probability of being FAKE to be
+        # labelled FAKE. Raising from 0.5 reduces false FAKE predictions
+        # on real videos (the model's early-training bias toward FAKE).
+        self.fake_threshold = fake_threshold
 
         self.model = DeepfakeDetector(pretrained=pretrained).to(device)
 
@@ -75,6 +80,7 @@ class DeepfakePredictor:
         self.visual_explainer = VisualExplainer(self.model.visual_encoder)
         self.audio_explainer = AudioExplainer(self.model.audio_encoder)
         self.temporal_explainer = TemporalExplainer(self.model)
+
 
     def _load_frames_and_audio(self, video_path: Path):
         with VideoLoader(video_path) as loader:
@@ -154,6 +160,15 @@ class DeepfakePredictor:
         )
         fake_probability = probabilities[0, 1].item()
 
+        # Apply confidence threshold: must be > fake_threshold to be FAKE.
+        # Default 0.65 means the model must be 65%+ confident it's fake.
+        is_fake = fake_probability >= self.fake_threshold
+        print(
+            f"Fake probability: {fake_probability:.4f} | "
+            f"Threshold: {self.fake_threshold:.2f} | "
+            f"Verdict: {'FAKE' if is_fake else 'REAL'}"
+        )
+
         temporal_result = self.temporal_explainer.explain(
             frames_tensor, audio_tensor, fps=sampled_fps
         )
@@ -211,10 +226,12 @@ class DeepfakePredictor:
             ),
             visual_saliency_available=visual_saliency_available,
             audio_importance_available=audio_importance_available,
+            threshold=self.fake_threshold,
         )
         report.visualization_paths = visualization_paths
 
         return report
+
 
     def close(self):
         self.face_detector.close()

@@ -40,10 +40,17 @@ class DeepfakeReport:
             else:
                 where = f"frame {idx}"
 
-            lines.append(
-                f"Most suspicious moment: {where} "
-                f"({frame_prob * 100:.1f}% fake confidence at that frame)"
-            )
+            if self.prediction == "REAL":
+                lines.append(
+                    f"Peak anomaly point: {where} "
+                    f"({frame_prob * 100:.1f}% fake probability - within safe REAL threshold)"
+                )
+            else:
+                lines.append(
+                    f"Most suspicious moment (manipulation detected): {where} "
+                    f"({frame_prob * 100:.1f}% fake confidence at that frame)"
+                )
+
 
         if self.visualization_paths:
             lines.append("Saved visualizations:")
@@ -72,6 +79,7 @@ def build_report(
     frame_times_seconds=None,
     visual_saliency_available: bool = False,
     audio_importance_available: bool = False,
+    threshold: float = 0.5,
 ) -> DeepfakeReport:
     """
     Args:
@@ -82,6 +90,7 @@ def build_report(
             fake_probability_per_frame.
         visual_saliency_available: whether visual XAI was computed.
         audio_importance_available: whether audio XAI was computed.
+        threshold: confidence threshold for FAKE verdict (default 0.5).
 
     Returns:
         A DeepfakeReport.
@@ -96,7 +105,7 @@ def build_report(
 
     return DeepfakeReport(
         video_path=str(video_path),
-        prediction="FAKE" if fake_probability >= 0.5 else "REAL",
+        prediction="FAKE" if fake_probability >= threshold else "REAL",
         fake_probability=float(fake_probability),
         fake_probability_per_frame=per_frame,
         frame_times_seconds=(
@@ -108,3 +117,4 @@ def build_report(
         audio_importance_available=audio_importance_available,
         most_suspicious_frame_index=most_suspicious_index,
     )
+
