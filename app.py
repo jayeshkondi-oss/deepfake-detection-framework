@@ -1,4 +1,4 @@
-﻿"""
+"""
 app.py - Production Web Server for Multimodal Deepfake Detection & Forensic Explainability (XAI)
 Runs FastAPI with an integrated responsive forensic dashboard.
 """
@@ -81,8 +81,7 @@ async def predict_video(
 
     req_id = str(uuid.uuid4())[:8]
     ext = Path(video.filename).suffix.lower()
-    if ext not in [".mp4", ".avi", ".mov", ".mkv", ".webm"]:
-        ext = ".mp4"
+    ext = ext if ext in {".mp4", ".avi", ".mov", ".mkv", ".webm"} else ".mp4"
     
     saved_video_path = UPLOAD_DIR / f"upload_{req_id}{ext}"
     vis_dir = REPORTS_DIR / req_id
@@ -107,17 +106,15 @@ async def predict_video(
         report.generate_html_report(str(html_report_path))
 
         # Encode visualizations as base64 for direct browser rendering
-        def to_b64(img_path):
-            if img_path and Path(img_path).exists():
-                with open(img_path, "rb") as f:
-                    return base64.b64encode(f.read()).decode("utf-8")
-            return ""
-
-        vis_b64 = to_b64(report.visualization_paths.get("visual_attention") if report.visualization_paths else None)
-        aud_b64 = to_b64(report.visualization_paths.get("audio_attention") if report.visualization_paths else None)
-        tem_b64 = to_b64(report.visualization_paths.get("temporal_timeline") if report.visualization_paths else None)
+        vp = report.visualization_paths or {}
+        b64 = {
+            k: base64.b64encode(Path(vp[k]).read_bytes()).decode()
+            if vp.get(k) and Path(vp[k]).exists() else ""
+            for k in ["visual_attention", "audio_attention", "temporal_timeline"]
+        }
 
         fd = report.forensic_data
+
 
         response_data = {
             "request_id": req_id,
@@ -153,9 +150,9 @@ async def predict_video(
                 "frame_probabilities": [round(p * 100, 1) for p in report.fake_probability_per_frame],
             },
             "visualizations": {
-                "visual_attention_b64": vis_b64,
-                "audio_attention_b64": aud_b64,
-                "temporal_timeline_b64": tem_b64,
+                "visual_attention_b64": b64["visual_attention"],
+                "audio_attention_b64": b64["audio_attention"],
+                "temporal_timeline_b64": b64["temporal_timeline"],
             },
             "report_download_url": f"/api/report/{req_id}"
         }

@@ -100,32 +100,20 @@ class ForensicAnalyzer:
             sal_np = sal_np.mean(axis=0)
 
         total_energy = float(sal_np.sum()) + 1e-9
-
-        b_energy = float(sal_np[self.boundary_mask].sum())
-        o_energy = float(sal_np[self.ocular_mask].sum())
-        p_energy = float(sal_np[self.perioral_mask].sum())
-        m_energy = float(sal_np[self.midface_mask].sum())
-
-        b_pct = (b_energy / total_energy) * 100.0
-        o_pct = (o_energy / total_energy) * 100.0
-        p_pct = (p_energy / total_energy) * 100.0
-        m_pct = (m_energy / total_energy) * 100.0
-
-        regions = {
-            "Face Blending Boundary": b_pct,
-            "Ocular Region (Eyes & Brows)": o_pct,
-            "Perioral Region (Mouth & Lips)": p_pct,
-            "Midface (Nose & Cheeks)": m_pct,
+        pcts = {
+            "boundary_pct": float(sal_np[self.boundary_mask].sum()) / total_energy * 100.0,
+            "ocular_pct": float(sal_np[self.ocular_mask].sum()) / total_energy * 100.0,
+            "perioral_pct": float(sal_np[self.perioral_mask].sum()) / total_energy * 100.0,
+            "midface_pct": float(sal_np[self.midface_mask].sum()) / total_energy * 100.0,
         }
-        primary = max(regions, key=regions.get)
-
-        return {
-            "boundary_pct": b_pct,
-            "ocular_pct": o_pct,
-            "perioral_pct": p_pct,
-            "midface_pct": m_pct,
-            "primary_region": primary,
+        names = {
+            "boundary_pct": "Face Blending Boundary",
+            "ocular_pct": "Ocular Region (Eyes & Brows)",
+            "perioral_pct": "Perioral Region (Mouth & Lips)",
+            "midface_pct": "Midface (Nose & Cheeks)",
         }
+        return {**pcts, "primary_region": names[max(pcts, key=pcts.get)]}
+
 
     def analyze_frequency_texture(self, face_crops: List[np.ndarray]) -> Dict[str, Any]:
         """

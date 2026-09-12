@@ -100,28 +100,12 @@ class DeepfakePredictor:
         face_crops = []
         h, w = raw_frames[0].shape[:2]
 
-        # Robust Temporal Bounding Box Interpolation & Tracking
+        # Robust Temporal Bounding Box Interpolation & Tracking (np.interp handles clamping & linear interp)
         if indexed_dets:
             known_indices = [d[0] for d in indexed_dets]
             known_boxes = np.array([d[1] for d in indexed_dets], dtype=float)
-            all_boxes = []
+            all_boxes = np.array([np.interp(range(len(raw_frames)), known_indices, known_boxes[:, k]) for k in range(4)]).T.astype(int)
 
-            for i in range(len(raw_frames)):
-                if i in known_indices:
-                    idx = known_indices.index(i)
-                    all_boxes.append(tuple(map(int, known_boxes[idx])))
-                elif i < known_indices[0]:
-                    all_boxes.append(tuple(map(int, known_boxes[0])))
-                elif i > known_indices[-1]:
-                    all_boxes.append(tuple(map(int, known_boxes[-1])))
-                else:
-                    b_idx = max(j for j in known_indices if j < i)
-                    a_idx = min(j for j in known_indices if j > i)
-                    b_box = known_boxes[known_indices.index(b_idx)]
-                    a_box = known_boxes[known_indices.index(a_idx)]
-                    alpha = (i - b_idx) / (a_idx - b_idx)
-                    interp = (1 - alpha) * b_box + alpha * a_box
-                    all_boxes.append(tuple(map(int, interp)))
 
             for i, frame in enumerate(raw_frames):
                 x1, y1, x2, y2 = all_boxes[i]
