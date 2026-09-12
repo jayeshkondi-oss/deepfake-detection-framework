@@ -6,6 +6,9 @@ the final box in the original architecture diagram.
 """
 
 from dataclasses import dataclass
+from typing import Optional
+
+from deepfake.explainability.forensic_analyzer import ForensicReportData
 
 
 @dataclass
@@ -23,6 +26,7 @@ class DeepfakeReport:
     threshold: float = 0.5
     most_suspicious_frame_index: int | None = None
     visualization_paths: dict | None = None
+    forensic_data: Optional[ForensicReportData] = None
 
     def summary(self) -> str:
         """A detailed, human-readable forensic XAI explanation report."""
@@ -37,80 +41,117 @@ class DeepfakeReport:
             f"Final Verdict : [{self.prediction}]",
             f"Confidence    : {real_prob:.1f}% REAL | {fake_prob:.1f}% FAKE  (Threshold: {self.threshold * 100:.1f}%)",
             "-" * 70,
-            "EXPLAINABLE AI (XAI) DIAGNOSTIC BREAKDOWN:",
-            "-" * 70,
         ]
 
-        # 1. Temporal Analysis
-        lines.append("1. TEMPORAL CONSISTENCY & LOCALIZATION:")
-        if self.fake_probability_per_frame:
-            min_p = min(self.fake_probability_per_frame) * 100
-            max_p = max(self.fake_probability_per_frame) * 100
-            variance = sum((p * 100 - fake_prob) ** 2 for p in self.fake_probability_per_frame) / len(self.fake_probability_per_frame)
-
-            if self.most_suspicious_frame_index is not None:
-                idx = self.most_suspicious_frame_index
-                time_str = (
-                    f"~{self.frame_times_seconds[idx]:.2f}s"
-                    if self.frame_times_seconds is not None
-                    else f"frame {idx}"
-                )
-            else:
-                time_str = "N/A"
-
-            if self.prediction == "REAL":
-                lines.append(
-                    f"   * Status: Consistent authentic temporal pattern across all frames."
-                )
-                lines.append(
-                    f"   * Frame Fake Scores: Min = {min_p:.1f}%, Max = {max_p:.1f}%, Variance = {variance:.2f}"
-                )
-                lines.append(
-                    f"   * Peak Anomaly Timestamp: {time_str} ({max_p:.1f}% - stays well below {self.threshold * 100:.1f}% threshold)."
-                )
-                lines.append(
-                    f"   * Explanation: Natural biological transitions observed across temporal frames;"
-                    f" no abrupt frame-switching or temporal jitter detected."
-                )
-            else:
-                lines.append(
-                    f"   * Status: Temporal inconsistency and manipulation spikes detected."
-                )
-                lines.append(
-                    f"   * Peak Manipulation Timestamp: {time_str} ({max_p:.1f}% fake confidence at this instant)."
-                )
-                lines.append(
-                    f"   * Frame Fake Scores: Range [{min_p:.1f}% to {max_p:.1f}%], Variance = {variance:.2f}"
-                )
-                lines.append(
-                    f"   * Explanation: Significant manipulation likelihood localized around {time_str},"
-                    f" indicating potential face-swapping or reenactment artifacts."
-                )
-
-        # 2. Visual Attention Saliency (Vision Transformer Rollout)
-        lines.append("\n2. VISUAL ATTENTION ROLLOUT (Spatial Analysis):")
-        if self.visual_saliency_available:
-            if self.prediction == "REAL":
-                lines.append(
-                    "   * ViT Attention Pattern: Uniformly distributed across natural facial landmarks."
-                )
-                lines.append(
-                    "   * Explanation: The Vision Transformer focuses on genuine ocular and oral features."
-                    " No localized face-swap boundary seams, warping, or blending artifacts detected."
-                )
-            else:
-                lines.append(
-                    "   * ViT Attention Pattern: High attention concentration along facial perimeter & mouth."
-                )
-                lines.append(
-                    "   * Explanation: Attention rollout reveals abnormal weight concentration at face boundaries"
-                    " or mouth region, characteristic of synthetic blending and digital seam artifacts."
-                )
+        if self.forensic_data:
+            lines.extend([
+                "EXECUTIVE FORENSIC SUMMARY (Human-Understandable):",
+                f"   {self.forensic_data.human_understandable_summary}",
+                "-" * 70,
+                "KEY FORENSIC FINDINGS & INDICATORS:",
+            ])
+            for ind in self.forensic_data.forensic_indicators:
+                lines.append(f"   [x] {ind}")
+            lines.extend([
+                "-" * 70,
+                "DETAILED MULTI-MODAL XAI BREAKDOWN:",
+                "-" * 70,
+                "1. ANATOMICAL FACIAL SALIENCY (Vision Transformer Attention Rollout):",
+                f"   * Face Blending Boundary : {self.forensic_data.boundary_saliency_pct:.1f}% of total attention",
+                f"   * Ocular Region (Eyes)   : {self.forensic_data.ocular_saliency_pct:.1f}% of total attention",
+                f"   * Perioral Region (Mouth): {self.forensic_data.perioral_saliency_pct:.1f}% of total attention",
+                f"   * Midface (Nose & Cheeks): {self.forensic_data.midface_saliency_pct:.1f}% of total attention",
+                f"   * Primary Focus Zone     : {self.forensic_data.primary_focus_region}",
+                "",
+                "2. HIGH-FREQUENCY SPECTRAL & TEXTURE ANALYSIS (FFT / Laplacian):",
+                f"   * Texture Realism Score  : {self.forensic_data.texture_coherence_score:.1f}%",
+                f"   * Laplacian Variance     : {self.forensic_data.laplacian_variance:.1f}",
+                f"   * High-Frequency Ratio   : {self.forensic_data.high_frequency_ratio:.3f}",
+                f"   * Generative Smoothing   : {'DETECTED (Synthetic Blur)' if self.forensic_data.has_generative_smoothing else 'NONE (Natural Sensor Noise Preserved)'}",
+                "",
+                "3. TEMPORAL DYNAMICS & FRAME-BY-FRAME STABILITY:",
+                f"   * Temporal Stability     : {self.forensic_data.temporal_stability_score:.1f}%",
+                f"   * Frame Variance         : {self.forensic_data.frame_variance:.2f}",
+                f"   * Peak Anomaly Moment    : ~{self.forensic_data.peak_timestamp_seconds:.2f}s ({self.forensic_data.peak_frame_score_pct:.1f}% fake probability)",
+                "",
+                "4. AUDIO-VISUAL CROSS-MODAL FUSION:",
+            ])
         else:
-            lines.append("   * Visual saliency explanation skipped.")
+            lines.extend([
+                "EXPLAINABLE AI (XAI) DIAGNOSTIC BREAKDOWN:",
+                "-" * 70,
+            ])
 
-        # 3. Audio & Cross-Modal Fusion Analysis
-        lines.append("\n3. AUDIO-VISUAL CROSS-MODAL FUSION:")
+            # Fallback 1. Temporal Analysis
+            lines.append("1. TEMPORAL CONSISTENCY & LOCALIZATION:")
+            if self.fake_probability_per_frame:
+                min_p = min(self.fake_probability_per_frame) * 100
+                max_p = max(self.fake_probability_per_frame) * 100
+                variance = sum((p * 100 - fake_prob) ** 2 for p in self.fake_probability_per_frame) / len(self.fake_probability_per_frame)
+
+                if self.most_suspicious_frame_index is not None:
+                    idx = self.most_suspicious_frame_index
+                    time_str = (
+                        f"~{self.frame_times_seconds[idx]:.2f}s"
+                        if self.frame_times_seconds is not None
+                        else f"frame {idx}"
+                    )
+                else:
+                    time_str = "N/A"
+
+                if self.prediction == "REAL":
+                    lines.append(
+                        f"   * Status: Consistent authentic temporal pattern across all frames."
+                    )
+                    lines.append(
+                        f"   * Frame Fake Scores: Min = {min_p:.1f}%, Max = {max_p:.1f}%, Variance = {variance:.2f}"
+                    )
+                    lines.append(
+                        f"   * Peak Anomaly Timestamp: {time_str} ({max_p:.1f}% - stays well below {self.threshold * 100:.1f}% threshold)."
+                    )
+                    lines.append(
+                        f"   * Explanation: Natural biological transitions observed across temporal frames;"
+                        f" no abrupt frame-switching or temporal jitter detected."
+                    )
+                else:
+                    lines.append(
+                        f"   * Status: Temporal inconsistency and manipulation spikes detected."
+                    )
+                    lines.append(
+                        f"   * Peak Manipulation Timestamp: {time_str} ({max_p:.1f}% fake confidence at this instant)."
+                    )
+                    lines.append(
+                        f"   * Frame Fake Scores: Range [{min_p:.1f}% to {max_p:.1f}%], Variance = {variance:.2f}"
+                    )
+                    lines.append(
+                        f"   * Explanation: Significant manipulation likelihood localized around {time_str},"
+                        f" indicating potential face-swapping or reenactment artifacts."
+                    )
+
+            # Fallback 2. Visual Attention Saliency
+            lines.append("\n2. VISUAL ATTENTION ROLLOUT (Spatial Analysis):")
+            if self.visual_saliency_available:
+                if self.prediction == "REAL":
+                    lines.append(
+                        "   * ViT Attention Pattern: Uniformly distributed across natural facial landmarks."
+                    )
+                    lines.append(
+                        "   * Explanation: The Vision Transformer focuses on genuine ocular and oral features."
+                        " No localized face-swap boundary seams, warping, or blending artifacts detected."
+                    )
+                else:
+                    lines.append(
+                        "   * ViT Attention Pattern: High attention concentration along facial perimeter & mouth."
+                    )
+                    lines.append(
+                        "   * Explanation: Attention rollout reveals abnormal weight concentration at face boundaries"
+                        " or mouth region, characteristic of synthetic blending and digital seam artifacts."
+                    )
+            else:
+                lines.append("   * Visual saliency explanation skipped.")
+
+            lines.append("\n3. AUDIO-VISUAL CROSS-MODAL FUSION:")
+
         if self.audio_importance_available:
             if self.prediction == "REAL":
                 lines.append(
@@ -163,6 +204,70 @@ class DeepfakeReport:
         real_pct = (1.0 - self.fake_probability) * 100
         fake_pct = self.fake_probability * 100
 
+        forensic_html = ""
+        if self.forensic_data:
+            fd = self.forensic_data
+            indicators_list = "".join([f"<li style='margin-bottom:6px;'>{ind}</li>" for ind in fd.forensic_indicators])
+            forensic_html = f"""
+        <div class="card" style="border-left: 5px solid #38bdf8;">
+            <div class="card-title" style="color:#38bdf8;">Executive Forensic Summary (Human-Understandable)</div>
+            <div class="explanation" style="font-size:15px; background:#1e293b; border-left:none; padding:10px 0;">
+                {fd.human_understandable_summary}
+            </div>
+            <div style="margin-top:16px;">
+                <strong style="font-size:14px; color:#94a3b8;">Key Forensic Indicators:</strong>
+                <ul style="font-size:13px; color:#cbd5e1; margin-top:8px; padding-left:20px;">
+                    {indicators_list}
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Anatomical Facial Saliency Allocation (ViT Attention Breakdown)</div>
+            <p style="font-size:13px; color:#94a3b8; margin-bottom:16px;">Quantifies where the Vision Transformer focused its attention across anatomical facial regions.</p>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+                <div style="background:#0f172a; padding:12px; border-radius:8px;">
+                    <div style="font-size:12px; color:#94a3b8;">Face Blending Boundary</div>
+                    <div style="font-size:22px; font-weight:bold; color:{'#ef4444' if fd.boundary_saliency_pct > 32 else '#38bdf8'};">{fd.boundary_saliency_pct:.1f}%</div>
+                    <div style="font-size:11px; color:#64748b;">Threshold: <32% normal</div>
+                </div>
+                <div style="background:#0f172a; padding:12px; border-radius:8px;">
+                    <div style="font-size:12px; color:#94a3b8;">Ocular (Eyes & Brows)</div>
+                    <div style="font-size:22px; font-weight:bold; color:#38bdf8;">{fd.ocular_saliency_pct:.1f}%</div>
+                    <div style="font-size:11px; color:#64748b;">Gaze & blinking</div>
+                </div>
+                <div style="background:#0f172a; padding:12px; border-radius:8px;">
+                    <div style="font-size:12px; color:#94a3b8;">Perioral (Mouth & Lips)</div>
+                    <div style="font-size:22px; font-weight:bold; color:{'#ef4444' if fd.perioral_saliency_pct > 35 else '#38bdf8'};">{fd.perioral_saliency_pct:.1f}%</div>
+                    <div style="font-size:11px; color:#64748b;">Phoneme articulation</div>
+                </div>
+                <div style="background:#0f172a; padding:12px; border-radius:8px;">
+                    <div style="font-size:12px; color:#94a3b8;">Midface (Nose & Cheeks)</div>
+                    <div style="font-size:22px; font-weight:bold; color:#38bdf8;">{fd.midface_saliency_pct:.1f}%</div>
+                    <div style="font-size:11px; color:#64748b;">Skin reflectance</div>
+                </div>
+            </div>
+            <div style="margin-top:14px; font-size:13px; color:#cbd5e1;">
+                <strong>Primary Visual Focus Zone:</strong> <span style="color:#38bdf8;">{fd.primary_focus_region}</span>
+            </div>
+        </div>
+
+        <div class="metric-grid">
+            <div class="metric-card">
+                <div class="metric-val" style="color:{'#22c55e' if fd.texture_coherence_score > 70 else '#ef4444'};">{fd.texture_coherence_score:.1f}%</div>
+                <div class="metric-lbl">Texture Realism (FFT / Laplacian)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-val" style="color:{'#22c55e' if fd.temporal_stability_score > 70 else '#ef4444'};">{fd.temporal_stability_score:.1f}%</div>
+                <div class="metric-lbl">Temporal Motion Stability</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-val" style="color:#38bdf8;">~{fd.peak_timestamp_seconds:.2f}s</div>
+                <div class="metric-lbl">Peak Anomaly Timestamp</div>
+            </div>
+        </div>
+            """
+
         html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -207,6 +312,8 @@ class DeepfakeReport:
                 <div class="metric-lbl">Decision Threshold</div>
             </div>
         </div>
+
+        {forensic_html}
 
         <div class="card">
             <div class="card-title">1. Spatial Attention Heatmap (Vision Transformer XAI)</div>
@@ -255,6 +362,7 @@ def build_report(
     visual_saliency_available: bool = False,
     audio_importance_available: bool = False,
     threshold: float = 0.5,
+    forensic_data: Optional[ForensicReportData] = None,
 ) -> DeepfakeReport:
     """
     Args:
@@ -266,6 +374,7 @@ def build_report(
         visual_saliency_available: whether visual XAI was computed.
         audio_importance_available: whether audio XAI was computed.
         threshold: confidence threshold for FAKE verdict (default 0.5).
+        forensic_data: optional ForensicReportData with anatomical and frequency diagnostics.
 
     Returns:
         A DeepfakeReport.
@@ -292,6 +401,8 @@ def build_report(
         audio_importance_available=audio_importance_available,
         threshold=float(threshold),
         most_suspicious_frame_index=most_suspicious_index,
+        forensic_data=forensic_data,
     )
+
 
 
