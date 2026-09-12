@@ -8,3 +8,6 @@ soundfile
 matplotlib
 PyYAML
 pytest
+fastapi
+uvicorn
+python-multipart

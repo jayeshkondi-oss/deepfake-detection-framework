@@ -1,0 +1,439 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepForensics AI - Deepfake Detection & XAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #080c14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .glass-panel { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glow-real { box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.35); border-color: rgba(16, 185, 129, 0.6); }
+        .glow-fake { box-shadow: 0 0 35px -5px rgba(239, 68, 68, 0.35); border-color: rgba(239, 68, 68, 0.6); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+    <header class="border-b border-gray-800/80 bg-gray-950/60 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl font-extrabold tracking-tight text-white">DeepForensics</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 font-mono">XAI v2.0</span>
+                    </div>
+                    <p class="text-xs text-gray-400">Multimodal Deepfake Verification Platform</p>
+                </div>
+            </div>
+            <div class="hidden sm:flex items-center space-x-4">
+                <span class="flex items-center text-xs text-gray-400 bg-gray-900 border border-gray-800 px-3 py-1.5 rounded-lg">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
+                    Engine: ViT-B/16 + Wav2Vec2 + XAI
+                </span>
+                <a href="/docs" target="_blank" class="text-xs text-gray-400 hover:text-sky-400 transition font-mono">API Docs &rarr;</a>
+            </div>
+        </div>
+    </header>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
+        <div class="text-center max-w-3xl mx-auto mb-10">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-medium mb-3">
+                <span>✦ Scientific Forensic Diagnostics & Explainable AI</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white mb-3">
+                Verify Video Authenticity with <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-400 to-cyan-300">Explainable AI</span>
+            </h1>
+            <p class="text-sm sm:text-base text-gray-400">
+                Upload any video to inspect facial blending boundaries, 2D FFT spectral residuals, and cross-modal audio-visual synchronization with complete human-understandable evidence.
+            </p>
+        </div>
+        <div class="max-w-3xl mx-auto mb-10">
+            <div class="glass-panel rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+                <form id="uploadForm" class="space-y-6">
+                    <div id="dropZone" class="border-2 border-dashed border-gray-700 hover:border-sky-500/60 rounded-xl p-8 text-center cursor-pointer transition-all duration-200 bg-gray-950/40 hover:bg-sky-950/10 group">
+                        <input type="file" id="videoFileInput" accept="video/mp4,video/avi,video/quicktime,video/x-matroska,video/webm" class="hidden">
+                        <div id="uploadPrompt">
+                            <div class="w-16 h-16 rounded-full bg-gray-800/80 group-hover:bg-sky-500/20 text-gray-400 group-hover:text-sky-400 flex items-center justify-center mx-auto mb-4 transition">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                            </div>
+                            <h3 class="text-base font-semibold text-white mb-1">Click to upload or drag & drop video</h3>
+                            <p class="text-xs text-gray-400">Supported formats: MP4, AVI, MOV, MKV, WebM</p>
+                        </div>
+                        <div id="previewContainer" class="hidden text-left">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                                    <span id="selectedFileName" class="text-xs font-mono text-gray-300 truncate max-w-xs font-semibold">video.mp4</span>
+                                    <span id="selectedFileSize" class="text-xs text-gray-500"></span>
+                                </div>
+                                <button type="button" id="removeFileBtn" class="text-xs text-red-400 hover:text-red-300 font-medium transition">Remove file</button>
+                            </div>
+                            <video id="videoPreview" controls class="w-full max-h-64 rounded-lg bg-black border border-gray-800 object-contain"></video>
+                        </div>
+                    </div>                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800/80">
+                        <div class="flex items-center justify-between mb-2">
+                            <div>
+                                <label for="thresholdSlider" class="text-xs font-semibold text-gray-200">Fake Detection Threshold</label>
+                                <p class="text-[11px] text-gray-400">Probability required to declare video FAKE (Default: 0.65 for unseen videos)</p>
+                            </div>
+                            <span id="thresholdVal" class="text-sm font-mono font-bold text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">65%</span>
+                        </div>
+                        <input type="range" id="thresholdSlider" min="0.30" max="0.90" step="0.05" value="0.65" class="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-sky-500">
+                        <div class="flex justify-between text-[10px] text-gray-500 font-mono mt-1">
+                            <span>Strict (30%)</span>
+                            <span>Standard (50%)</span>
+                            <span>Conservative / Unseen (65%)</span>
+                            <span>High Precision (90%)</span>
+                        </div>
+                    </div>
+                    <button type="submit" id="analyzeBtn" class="w-full py-3.5 px-6 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-sky-500 via-indigo-600 to-sky-600 hover:from-sky-400 hover:to-indigo-500 shadow-lg shadow-sky-500/25 transition duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span>Run Full Forensic Deepfake Analysis</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div id="loadingSection" class="hidden max-w-2xl mx-auto my-12 text-center">
+            <div class="glass-panel rounded-2xl p-8 shadow-2xl border border-sky-500/20">
+                <div class="relative w-20 h-20 mx-auto mb-6">
+                    <div class="w-20 h-20 rounded-full border-4 border-gray-800 border-t-sky-500 animate-spin"></div>
+                </div>
+                <h3 id="loadingTitle" class="text-lg font-bold text-white mb-2">Analyzing Video Forensics...</h3>
+                <p id="loadingSub" class="text-xs text-gray-400 font-mono mb-4">Extracting 16-frame sequence & temporal face tracking</p>
+                <div class="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                    <div id="progressBar" class="bg-gradient-to-r from-sky-500 to-indigo-500 h-2 rounded-full transition-all duration-300" style="width: 25%"></div>
+                </div>
+            </div>
+        </div>
+        <div id="resultsSection" class="hidden space-y-8 max-w-5xl mx-auto">
+            <div id="verdictBanner" class="rounded-2xl p-6 sm:p-8 glass-panel border-2 transition-all duration-300">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="space-y-1">
+                        <div class="flex items-center space-x-3">
+                            <span id="verdictBadge" class="text-sm font-black uppercase tracking-wider px-3 py-1 rounded-full text-white">AUTHENTIC</span>
+                            <span id="resultVideoName" class="text-xs text-gray-400 font-mono">video.mp4</span>
+                        </div>
+                        <h2 id="verdictTitle" class="text-2xl sm:text-3xl font-black text-white">Video Verified as Authentic</h2>
+                        <p id="verdictSubtitle" class="text-xs text-gray-300 font-mono">Synthetic Probability: 12.4% | Decision Threshold: 65.0%</p>
+                    </div>
+                    <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 border-gray-800 pt-4 sm:pt-0">
+                        <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Authentic Confidence</span>
+                        <span id="realPctBig" class="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-mono">87.6%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 glass-panel rounded-2xl p-6 border-l-4 border-l-sky-500">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-sky-400 flex items-center space-x-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span>Executive Forensic Diagnosis</span>
+                        </h3>
+                        <span class="text-[11px] font-mono text-gray-400 bg-gray-900 px-2 py-0.5 rounded">Human-Readable</span>
+                    </div>
+                    <p id="executiveSummaryText" class="text-sm leading-relaxed text-gray-200">Loading...</p>
+                </div>
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-gray-300 mb-3 flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                        <span>Key Forensic Indicators</span>
+                    </h3>
+                    <ul id="indicatorsList" class="space-y-2 text-xs text-gray-300"></ul>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-panel rounded-xl p-4 text-center">
+                    <span class="text-xs text-gray-400 font-medium">Authentic Confidence</span>
+                    <div id="statRealPct" class="text-2xl font-black text-emerald-400 font-mono mt-1">87.6%</div>
+                    <div class="text-[10px] text-gray-500 mt-1">Model Real Probability</div>
+                </div>
+                <div class="glass-panel rounded-xl p-4 text-center">
+                    <span class="text-xs text-gray-400 font-medium">Synthetic Probability</span>
+                    <div id="statFakePct" class="text-2xl font-black text-sky-400 font-mono mt-1">12.4%</div>
+                    <div class="text-[10px] text-gray-500 mt-1">Model Fake Probability</div>
+                </div>
+                <div class="glass-panel rounded-xl p-4 text-center">
+                    <span class="text-xs text-gray-400 font-medium">Texture Realism (FFT)</span>
+                    <div id="statTextureScore" class="text-2xl font-black text-cyan-400 font-mono mt-1">82.0%</div>
+                    <div class="text-[10px] text-gray-500 mt-1">Sensor Noise vs Smoothing</div>
+                </div>
+                <div class="glass-panel rounded-xl p-4 text-center">
+                    <span class="text-xs text-gray-400 font-medium">Motion Stability</span>
+                    <div id="statStabilityScore" class="text-2xl font-black text-indigo-400 font-mono mt-1">94.5%</div>
+                    <div class="text-[10px] text-gray-500 mt-1">Inter-frame Continuity</div>
+                </div>
+            </div>            <div class="glass-panel rounded-2xl p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-base font-bold text-white">Anatomical Facial Saliency (Vision Transformer Focus)</h3>
+                        <p class="text-xs text-gray-400">Where the model allocated attention across physiological facial zones.</p>
+                    </div>
+                    <span id="primaryZoneTag" class="mt-2 sm:mt-0 text-xs font-mono font-semibold text-sky-400 bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20">Primary Focus: Balanced Landmarks</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800">
+                        <div class="flex justify-between items-center text-xs mb-1">
+                            <span class="text-gray-300 font-semibold">Face Blending Boundary</span>
+                            <span id="salBoundaryPct" class="font-mono text-sky-400 font-bold">18.5%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barBoundary" class="bg-sky-500 h-2 rounded-full" style="width: 18%"></div></div>
+                        <p class="text-[11px] text-gray-500">Seam where synthetic face is pasted onto head</p>
+                    </div>
+                    <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800">
+                        <div class="flex justify-between items-center text-xs mb-1">
+                            <span class="text-gray-300 font-semibold">Ocular (Eyes & Brows)</span>
+                            <span id="salOcularPct" class="font-mono text-sky-400 font-bold">28.2%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barOcular" class="bg-indigo-500 h-2 rounded-full" style="width: 28%"></div></div>
+                        <p class="text-[11px] text-gray-500">Gaze stability, blinking rate, ocular geometry</p>
+                    </div>
+                    <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800">
+                        <div class="flex justify-between items-center text-xs mb-1">
+                            <span class="text-gray-300 font-semibold">Perioral (Mouth & Lips)</span>
+                            <span id="salPerioralPct" class="font-mono text-sky-400 font-bold">24.1%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barPerioral" class="bg-cyan-500 h-2 rounded-full" style="width: 24%"></div></div>
+                        <p class="text-[11px] text-gray-500">Phoneme-viseme articulation and lip-sync</p>
+                    </div>
+                    <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800">
+                        <div class="flex justify-between items-center text-xs mb-1">
+                            <span class="text-gray-300 font-semibold">Midface (Nose & Cheeks)</span>
+                            <span id="salMidfacePct" class="font-mono text-sky-400 font-bold">29.2%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barMidface" class="bg-emerald-500 h-2 rounded-full" style="width: 29%"></div></div>
+                        <p class="text-[11px] text-gray-500">Skin pore texture, lighting reflectance</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-panel rounded-2xl p-6">
+                <h3 class="text-base font-bold text-white mb-4">Deep Explainability Visualizations (XAI)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-200 mb-1">1. Spatial Attention Heatmap</h4>
+                            <p class="text-[11px] text-gray-400 mb-3">ViT Attention rollout across 14&times;14 facial patches on peak frame.</p>
+                        </div>
+                        <img id="imgVisualAttention" src="" alt="Visual Attention Saliency" class="w-full h-56 rounded-lg bg-black object-contain border border-gray-800">
+                    </div>
+                    <div class="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-200 mb-1">2. Temporal Timeline</h4>
+                            <p class="text-[11px] text-gray-400 mb-3">Frame-by-frame manipulation likelihood over time.</p>
+                        </div>
+                        <img id="imgTemporalTimeline" src="" alt="Temporal Timeline" class="w-full h-56 rounded-lg bg-black object-contain border border-gray-800">
+                    </div>
+                    <div class="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-200 mb-1">3. Acoustic Importance</h4>
+                            <p class="text-[11px] text-gray-400 mb-3">Wav2Vec2 acoustic weights & cross-modal alignment.</p>
+                        </div>
+                        <img id="imgAudioAttention" src="" alt="Audio Attention" class="w-full h-56 rounded-lg bg-black object-contain border border-gray-800">
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <a id="downloadReportBtn" href="#" target="_blank" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white font-semibold text-xs flex items-center justify-center space-x-2 transition shadow-lg">
+                    <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    <span>Download Full Standalone Forensic Report (HTML)</span>
+                </a>
+                <button type="button" id="resetBtn" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-sky-600/20 hover:bg-sky-600/30 border border-sky-500/40 text-sky-300 font-semibold text-xs flex items-center justify-center space-x-2 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    <span>Analyze Another Video</span>
+                </button>
+            </div>
+        </div>
+    </main>
+    <footer class="border-t border-gray-800/80 bg-gray-950/80 py-6 text-center text-xs text-gray-500">
+        <div class="max-w-7xl mx-auto px-4 space-y-1">
+            <p>DeepForensics AI &bull; Deepfake Detection Framework powered by Google ViT, Meta Wav2Vec2, and Explainable AI (XAI)</p>
+            <p class="text-[11px] text-gray-600">Designed for university defense, faculty evaluation, and forensic media verification.</p>
+        </div>
+    </footer>
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('videoFileInput');
+        const uploadPrompt = document.getElementById('uploadPrompt');
+        const previewContainer = document.getElementById('previewContainer');
+        const videoPreview = document.getElementById('videoPreview');
+        const selectedFileName = document.getElementById('selectedFileName');
+        const selectedFileSize = document.getElementById('selectedFileSize');
+        const removeFileBtn = document.getElementById('removeFileBtn');
+        const thresholdSlider = document.getElementById('thresholdSlider');
+        const thresholdVal = document.getElementById('thresholdVal');
+        const uploadForm = document.getElementById('uploadForm');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const loadingSection = document.getElementById('loadingSection');
+        const loadingTitle = document.getElementById('loadingTitle');
+        const loadingSub = document.getElementById('loadingSub');
+        const progressBar = document.getElementById('progressBar');
+        const resultsSection = document.getElementById('resultsSection');
+        const verdictBanner = document.getElementById('verdictBanner');
+        const verdictBadge = document.getElementById('verdictBadge');
+        const resultVideoName = document.getElementById('resultVideoName');
+        const verdictTitle = document.getElementById('verdictTitle');
+        const verdictSubtitle = document.getElementById('verdictSubtitle');
+        const realPctBig = document.getElementById('realPctBig');
+        const executiveSummaryText = document.getElementById('executiveSummaryText');
+        const indicatorsList = document.getElementById('indicatorsList');
+        const statRealPct = document.getElementById('statRealPct');
+        const statFakePct = document.getElementById('statFakePct');
+        const statTextureScore = document.getElementById('statTextureScore');
+        const statStabilityScore = document.getElementById('statStabilityScore');
+        const primaryZoneTag = document.getElementById('primaryZoneTag');
+        const salBoundaryPct = document.getElementById('salBoundaryPct');
+        const salOcularPct = document.getElementById('salOcularPct');
+        const salPerioralPct = document.getElementById('salPerioralPct');
+        const salMidfacePct = document.getElementById('salMidfacePct');
+        const barBoundary = document.getElementById('barBoundary');
+        const barOcular = document.getElementById('barOcular');
+        const barPerioral = document.getElementById('barPerioral');
+        const barMidface = document.getElementById('barMidface');
+        const imgVisualAttention = document.getElementById('imgVisualAttention');
+        const imgTemporalTimeline = document.getElementById('imgTemporalTimeline');
+        const imgAudioAttention = document.getElementById('imgAudioAttention');
+        const downloadReportBtn = document.getElementById('downloadReportBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        let selectedFile = null;
+
+        thresholdSlider.addEventListener('input', (e) => {
+            thresholdVal.textContent = Math.round(e.target.value * 100) + '%';
+        });
+        dropZone.addEventListener('click', (e) => {
+            if (e.target !== removeFileBtn && !previewContainer.contains(e.target)) fileInput.click();
+        });
+        ['dragenter', 'dragover'].forEach(n => dropZone.addEventListener(n, (e) => { e.preventDefault(); dropZone.classList.add('border-sky-500', 'bg-sky-950/20'); }));
+        ['dragleave', 'drop'].forEach(n => dropZone.addEventListener(n, (e) => { e.preventDefault(); dropZone.classList.remove('border-sky-500', 'bg-sky-950/20'); }));
+        dropZone.addEventListener('drop', (e) => { if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
+        fileInput.addEventListener('change', (e) => { if (fileInput.files.length) handleFile(fileInput.files[0]); });
+
+        function handleFile(file) {
+            selectedFile = file;
+            selectedFileName.textContent = file.name;
+            selectedFileSize.textContent = '(' + (file.size / 1048576).toFixed(1) + ' MB)';
+            videoPreview.src = URL.createObjectURL(file);
+            uploadPrompt.classList.add('hidden');
+            previewContainer.classList.remove('hidden');
+        }
+        removeFileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectedFile = null;
+            fileInput.value = '';
+            videoPreview.pause();
+            videoPreview.src = '';
+            previewContainer.classList.add('hidden');
+            uploadPrompt.classList.remove('hidden');
+        });
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!selectedFile) return alert('Please select a video file first!');
+            uploadForm.classList.add('opacity-50', 'pointer-events-none');
+            analyzeBtn.disabled = true;
+            loadingSection.classList.remove('hidden');
+            resultsSection.classList.add('hidden');
+            loadingSection.scrollIntoView({ behavior: 'smooth' });
+
+            let p = 10;
+            const iv = setInterval(() => {
+                if (p < 90) {
+                    p += Math.floor(Math.random() * 8) + 4;
+                    progressBar.style.width = p + '%';
+                    if (p > 35 && p <= 65) {
+                        loadingTitle.textContent = 'Extracting ViT & Wav2Vec2 Features...';
+                        loadingSub.textContent = 'Processing Vision Transformer patch tokens and acoustic waves';
+                    } else if (p > 65) {
+                        loadingTitle.textContent = 'Evaluating Multi-Modal XAI Diagnostics...';
+                        loadingSub.textContent = 'ForensicAnalyzer inspecting 2D FFT spectral residuals and facial seams';
+                    }
+                }
+            }, 600);
+
+            const fd = new FormData();
+            fd.append('video', selectedFile);
+            fd.append('threshold', thresholdSlider.value);
+
+            try {
+                const res = await fetch('/api/predict', { method: 'POST', body: fd });
+                clearInterval(iv);
+                progressBar.style.width = '100%';
+                if (!res.ok) { const err = await res.json(); throw new Error(err.detail || 'Prediction failed'); }
+                const data = await res.json();
+                renderResults(data);
+            } catch (err) {
+                clearInterval(iv);
+                alert('Analysis error: ' + err.message);
+            } finally {
+                uploadForm.classList.remove('opacity-50', 'pointer-events-none');
+                analyzeBtn.disabled = false;
+                loadingSection.classList.add('hidden');
+            }
+        });
+
+        function renderResults(data) {
+            const isFake = data.is_fake;
+            verdictBanner.className = `rounded-2xl p-6 sm:p-8 glass-panel border-2 transition-all duration-300 ${isFake ? 'glow-fake border-red-500/60' : 'glow-real border-emerald-500/60'}`;
+            verdictBadge.className = `text-sm font-black uppercase tracking-wider px-3 py-1 rounded-full text-white ${isFake ? 'bg-red-600' : 'bg-emerald-600'}`;
+            verdictBadge.textContent = isFake ? 'MANIPULATED (DEEPFAKE)' : 'AUTHENTIC (REAL)';
+            resultVideoName.textContent = data.filename;
+            verdictTitle.textContent = isFake ? 'Video Flagged as Manipulated' : 'Video Verified as Authentic';
+            verdictSubtitle.textContent = `Synthetic Probability: ${data.fake_pct}% | Decision Threshold: ${data.threshold_pct}%`;
+            realPctBig.textContent = `${data.real_pct}%`;
+            realPctBig.className = `text-3xl sm:text-4xl font-extrabold font-mono ${isFake ? 'text-red-400' : 'text-emerald-400'}`;
+
+            executiveSummaryText.textContent = data.executive_summary;
+            indicatorsList.innerHTML = '';
+            if (data.forensic_indicators && data.forensic_indicators.length) {
+                data.forensic_indicators.forEach(ind => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-start space-x-2';
+                    li.innerHTML = `<span class="text-sky-400 mt-0.5">&bull;</span><span class="text-gray-300 font-mono text-[11px]">${ind}</span>`;
+                    indicatorsList.appendChild(li);
+                });
+            } else {
+                indicatorsList.innerHTML = '<li class="text-gray-500">No anomaly flags detected.</li>';
+            }
+
+            statRealPct.textContent = `${data.real_pct}%`;
+            statRealPct.className = `text-2xl font-black font-mono mt-1 ${isFake ? 'text-gray-400' : 'text-emerald-400'}`;
+            statFakePct.textContent = `${data.fake_pct}%`;
+            statFakePct.className = `text-2xl font-black font-mono mt-1 ${isFake ? 'text-red-400' : 'text-sky-400'}`;
+
+            const tex = data.texture_and_frequency.texture_coherence_score;
+            statTextureScore.textContent = `${tex}%`;
+            statTextureScore.className = `text-2xl font-black font-mono mt-1 ${tex > 70 ? 'text-cyan-400' : 'text-amber-400'}`;
+
+            const stab = data.temporal_dynamics.stability_score;
+            statStabilityScore.textContent = `${stab}%`;
+            statStabilityScore.className = `text-2xl font-black font-mono mt-1 ${stab > 70 ? 'text-indigo-400' : 'text-amber-400'}`;
+
+            const sal = data.anatomical_saliency;
+            primaryZoneTag.textContent = `Primary Focus: ${sal.primary_region}`;
+            salBoundaryPct.textContent = `${sal.boundary_pct}%`;
+            barBoundary.style.width = `${Math.min(100, sal.boundary_pct)}%`;
+            barBoundary.className = `h-2 rounded-full ${sal.boundary_pct > 32 ? 'bg-red-500' : 'bg-sky-500'}`;
+
+            salOcularPct.textContent = `${sal.ocular_pct}%`;
+            barOcular.style.width = `${Math.min(100, sal.ocular_pct)}%`;
+            salPerioralPct.textContent = `${sal.perioral_pct}%`;
+            barPerioral.style.width = `${Math.min(100, sal.perioral_pct)}%`;
+            barPerioral.className = `h-2 rounded-full ${sal.perioral_pct > 35 ? 'bg-red-500' : 'bg-cyan-500'}`;
+            salMidfacePct.textContent = `${sal.midface_pct}%`;
+            barMidface.style.width = `${Math.min(100, sal.midface_pct)}%`;
+
+            if (data.visualizations.visual_attention_b64) imgVisualAttention.src = 'data:image/png;base64,' + data.visualizations.visual_attention_b64;
+            if (data.visualizations.temporal_timeline_b64) imgTemporalTimeline.src = 'data:image/png;base64,' + data.visualizations.temporal_timeline_b64;
+            if (data.visualizations.audio_attention_b64) imgAudioAttention.src = 'data:image/png;base64,' + data.visualizations.audio_attention_b64;
+
+            downloadReportBtn.href = data.report_download_url;
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        resetBtn.addEventListener('click', () => {
+            resultsSection.classList.add('hidden');
+            uploadForm.scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
