@@ -45,7 +45,14 @@ class DeepfakeReport:
 
         if self.forensic_data:
             lines.extend([
-                "EXECUTIVE FORENSIC SUMMARY (Human-Understandable):",
+                f"WHY THIS VIDEO IS {self.prediction} (Plain-English Explanation):",
+                "-" * 70,
+            ])
+            for r in (self.forensic_data.simple_reasons or []):
+                lines.append(f"   [{r['status']}] {r['title']}: {r['detail']}")
+            lines.extend([
+                "-" * 70,
+                "EXECUTIVE FORENSIC SUMMARY:",
                 f"   {self.forensic_data.human_understandable_summary}",
                 "-" * 70,
                 "KEY FORENSIC FINDINGS & INDICATORS:",
@@ -134,9 +141,38 @@ class DeepfakeReport:
         if self.forensic_data:
             fd = self.forensic_data
             indicators_list = "".join([f"<li style='margin-bottom:6px;'>{ind}</li>" for ind in fd.forensic_indicators])
+            
+            reasons_cards_html = ""
+            if fd.simple_reasons:
+                cards = []
+                for r in fd.simple_reasons:
+                    st_col = "#22c55e" if r["status"] == "PASS" else "#ef4444"
+                    st_bg = "rgba(34,197,94,0.15)" if r["status"] == "PASS" else "rgba(239,68,68,0.15)"
+                    cards.append(f"""
+                    <div style="background:#0f172a; border: 1px solid #334155; border-radius:10px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <strong style="color:#f8fafc; font-size:14px;">{r['title']}</strong>
+                            <span style="font-size:11px; font-weight:bold; color:{st_col}; background:{st_bg}; border: 1px solid {st_col}; padding:2px 8px; border-radius:999px;">{r['status']}</span>
+                        </div>
+                        <p style="font-size:13px; color:#cbd5e1; margin:0; line-height:1.5;">{r['detail']}</p>
+                    </div>
+                    """)
+                reasons_cards_html = f"""
+                <div class="card" style="border-left: 5px solid {verdict_color};">
+                    <div class="card-title" style="color:{verdict_color}; font-size:20px;">
+                        Why is this video classified as {self.prediction}? (Plain-English Explanation)
+                    </div>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:12px;">
+                        {"".join(cards)}
+                    </div>
+                </div>
+                """
+
             forensic_html = f"""
+        {reasons_cards_html}
+
         <div class="card" style="border-left: 5px solid #38bdf8;">
-            <div class="card-title" style="color:#38bdf8;">Executive Forensic Summary (Human-Understandable)</div>
+            <div class="card-title" style="color:#38bdf8;">Executive Forensic Summary</div>
             <div class="explanation" style="font-size:15px; background:#1e293b; border-left:none; padding:10px 0;">
                 {fd.human_understandable_summary}
             </div>

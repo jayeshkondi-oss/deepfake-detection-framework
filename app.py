@@ -127,6 +127,12 @@ async def predict_video(
             "threshold": float(threshold),
             "threshold_pct": round(float(threshold) * 100, 1),
             "is_fake": report.prediction == "FAKE",
+            "verdict_comparison": (
+                f"Fake Score {round(report.fake_probability * 100, 1)}% > Threshold {round(float(threshold) * 100, 1)}%"
+                if report.prediction == "FAKE" else
+                f"Fake Score {round(report.fake_probability * 100, 1)}% < Threshold {round(float(threshold) * 100, 1)}%"
+            ),
+            "simple_reasons": fd.simple_reasons if (fd and fd.simple_reasons) else [],
             "executive_summary": fd.human_understandable_summary if fd else "",
             "forensic_indicators": fd.forensic_indicators if fd else [],
             "anatomical_saliency": {

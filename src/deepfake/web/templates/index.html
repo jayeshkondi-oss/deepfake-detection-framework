@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -108,137 +108,175 @@
             </div>
         </div>
         <div id="resultsSection" class="hidden space-y-8 max-w-5xl mx-auto">
+            <!-- 1. TOP VERDICT BANNER -->
             <div id="verdictBanner" class="rounded-2xl p-6 sm:p-8 glass-panel border-2 transition-all duration-300">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div class="space-y-1">
+                    <div class="space-y-2">
                         <div class="flex items-center space-x-3">
-                            <span id="verdictBadge" class="text-sm font-black uppercase tracking-wider px-3 py-1 rounded-full text-white">AUTHENTIC</span>
+                            <span id="verdictBadge" class="text-sm font-black uppercase tracking-wider px-3.5 py-1 rounded-full text-white shadow-md">AUTHENTIC</span>
                             <span id="resultVideoName" class="text-xs text-gray-400 font-mono">video.mp4</span>
                         </div>
-                        <h2 id="verdictTitle" class="text-2xl sm:text-3xl font-black text-white">Video Verified as Authentic</h2>
-                        <p id="verdictSubtitle" class="text-xs text-gray-300 font-mono">Synthetic Probability: 12.4% | Decision Threshold: 65.0%</p>
+                        <h2 id="verdictTitle" class="text-2xl sm:text-3xl font-black text-white">Video Verified as Authentic (Real)</h2>
+                        <div id="verdictPill" class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold border">
+                            <span id="verdictPillText">Fake Likelihood 12.4% is safely below Threshold 65.0%</span>
+                        </div>
                     </div>
                     <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 border-gray-800 pt-4 sm:pt-0">
-                        <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Authentic Confidence</span>
-                        <span id="realPctBig" class="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-mono">87.6%</span>
+                        <span id="verdictPrimaryLabel" class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Authentic Confidence</span>
+                        <span id="verdictPrimaryVal" class="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-mono">87.6%</span>
+                    </div>
+                </div>
+
+                <!-- 3 Quick Comparison Metrics: Real, Fake, Threshold -->
+                <div class="grid grid-cols-3 gap-3 mt-6 pt-6 border-t border-gray-800/80">
+                    <div class="bg-gray-900/60 p-3.5 rounded-xl border border-gray-800 text-center">
+                        <div class="text-[11px] text-gray-400 font-medium">Real Confidence</div>
+                        <div id="quickRealPct" class="text-xl sm:text-2xl font-black text-emerald-400 font-mono mt-0.5">87.6%</div>
+                    </div>
+                    <div class="bg-gray-900/60 p-3.5 rounded-xl border border-gray-800 text-center">
+                        <div class="text-[11px] text-gray-400 font-medium">Fake Probability</div>
+                        <div id="quickFakePct" class="text-xl sm:text-2xl font-black text-sky-400 font-mono mt-0.5">12.4%</div>
+                    </div>
+                    <div class="bg-gray-900/60 p-3.5 rounded-xl border border-gray-800 text-center">
+                        <div class="text-[11px] text-gray-400 font-medium">Decision Threshold</div>
+                        <div id="quickThreshold" class="text-xl sm:text-2xl font-black text-indigo-400 font-mono mt-0.5">65.0%</div>
                     </div>
                 </div>
             </div>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 glass-panel rounded-2xl p-6 border-l-4 border-l-sky-500">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-sky-400 flex items-center space-x-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            <span>Executive Forensic Diagnosis</span>
-                        </h3>
-                        <span class="text-[11px] font-mono text-gray-400 bg-gray-900 px-2 py-0.5 rounded">Human-Readable</span>
+
+            <!-- 2. WHY IS THIS VIDEO REAL / FAKE? (PLAIN-ENGLISH EXPLANATION) -->
+            <div id="whySection" class="glass-panel rounded-2xl p-6 sm:p-8 border-l-4 transition-all">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl" id="whyIcon">💡</span>
+                        <div>
+                            <h3 id="whyTitle" class="text-lg sm:text-xl font-extrabold text-white">Why is this video REAL?</h3>
+                            <p class="text-xs text-gray-400">Plain-English breakdown of forensic evidence and why this decision was reached.</p>
+                        </div>
                     </div>
-                    <p id="executiveSummaryText" class="text-sm leading-relaxed text-gray-200">Loading...</p>
+                    <span id="whyVerdictPill" class="self-start sm:self-auto text-xs font-mono font-bold px-3 py-1 rounded-full border">VERIFIED AUTHENTIC</span>
                 </div>
-                <div class="glass-panel rounded-2xl p-6">
-                    <h3 class="text-sm font-bold uppercase tracking-wider text-gray-300 mb-3 flex items-center space-x-2">
-                        <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
-                        <span>Key Forensic Indicators</span>
+
+                <p id="executiveSummaryText" class="text-sm leading-relaxed text-gray-200 mb-6 bg-gray-900/70 p-4 rounded-xl border border-gray-800/80">Loading...</p>
+
+                <!-- 4 Plain-English Reason Cards -->
+                <div id="reasonsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- 3. VISUAL FORENSIC CHARTS & EVIDENCE -->
+            <div class="glass-panel rounded-2xl p-6 sm:p-8 space-y-6">
+                <div>
+                    <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                        <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                        <span>Visual Forensic Charts & Evidence</span>
                     </h3>
-                    <ul id="indicatorsList" class="space-y-2 text-xs text-gray-300"></ul>
+                    <p class="text-xs text-gray-400 mt-1">Graphical inspections showing frame-by-frame risk, facial focus areas, and regional breakdown.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Chart 1: Frame-by-Frame Timeline -->
+                    <div class="bg-gray-900/60 rounded-xl p-5 border border-gray-800 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <h4 class="text-sm font-bold text-white flex items-center space-x-1.5">
+                                    <span>📈</span>
+                                    <span>Frame-by-Frame Timeline</span>
+                                </h4>
+                                <span class="text-[10px] font-mono text-gray-400 bg-gray-800 px-2 py-0.5 rounded">Timeline Analysis</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">Tracks synthetic likelihood across each second of video against your threshold.</p>
+                        </div>
+                        <img id="imgTemporalTimeline" src="" alt="Temporal Timeline" class="w-full h-64 rounded-lg bg-black object-contain border border-gray-800">
+                    </div>
+
+                    <!-- Chart 2: AI Attention Heatmap -->
+                    <div class="bg-gray-900/60 rounded-xl p-5 border border-gray-800 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <h4 class="text-sm font-bold text-white flex items-center space-x-1.5">
+                                    <span>🎯</span>
+                                    <span>AI Attention Heatmap</span>
+                                </h4>
+                                <span class="text-[10px] font-mono text-gray-400 bg-gray-800 px-2 py-0.5 rounded">Where AI Looked</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">Warmer yellow & red patches reveal where the Vision Transformer focused its scrutiny.</p>
+                        </div>
+                        <img id="imgVisualAttention" src="" alt="Visual Attention Saliency" class="w-full h-64 rounded-lg bg-black object-contain border border-gray-800">
+                    </div>
+                </div>
+
+                <!-- Chart 3: Facial Zone Attention Breakdown (Bar Chart) -->
+                <div class="bg-gray-900/60 rounded-xl p-5 border border-gray-800">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+                        <div>
+                            <h4 class="text-sm font-bold text-white flex items-center space-x-1.5">
+                                <span>📊</span>
+                                <span>Facial Zone Attention Breakdown</span>
+                            </h4>
+                            <p class="text-xs text-gray-400 mt-0.5">Quantifies attention distributed across facial regions (balanced distribution indicates genuine video).</p>
+                        </div>
+                        <span id="primaryZoneTag" class="mt-2 sm:mt-0 text-xs font-mono font-semibold text-sky-400 bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20">Primary Focus: Balanced Landmarks</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-gray-950/60 p-3.5 rounded-lg border border-gray-800/80">
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <span class="text-gray-300 font-semibold">Face Border (Cut/Paste)</span>
+                                <span id="salBoundaryPct" class="font-mono text-sky-400 font-bold">18.5%</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barBoundary" class="bg-sky-500 h-2 rounded-full" style="width: 18%"></div></div>
+                            <p class="text-[11px] text-gray-500">Seam where swapped face is blended into head</p>
+                        </div>
+                        <div class="bg-gray-950/60 p-3.5 rounded-lg border border-gray-800/80">
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <span class="text-gray-300 font-semibold">Eyes & Brows</span>
+                                <span id="salOcularPct" class="font-mono text-sky-400 font-bold">28.2%</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barOcular" class="bg-indigo-500 h-2 rounded-full" style="width: 28%"></div></div>
+                            <p class="text-[11px] text-gray-500">Gaze consistency and natural blink rates</p>
+                        </div>
+                        <div class="bg-gray-950/60 p-3.5 rounded-lg border border-gray-800/80">
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <span class="text-gray-300 font-semibold">Mouth & Lips</span>
+                                <span id="salPerioralPct" class="font-mono text-sky-400 font-bold">24.1%</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barPerioral" class="bg-cyan-500 h-2 rounded-full" style="width: 24%"></div></div>
+                            <p class="text-[11px] text-gray-500">Speech articulation and lip-syncing checks</p>
+                        </div>
+                        <div class="bg-gray-950/60 p-3.5 rounded-lg border border-gray-800/80">
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <span class="text-gray-300 font-semibold">Cheeks & Nose</span>
+                                <span id="salMidfacePct" class="font-mono text-sky-400 font-bold">29.2%</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barMidface" class="bg-emerald-500 h-2 rounded-full" style="width: 29%"></div></div>
+                            <p class="text-[11px] text-gray-500">Natural skin pores and lighting reflectance</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 4: Audio Alignment (shown if audio available) -->
+                <div id="audioCard" class="hidden bg-gray-900/60 rounded-xl p-5 border border-gray-800">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="text-sm font-bold text-white flex items-center space-x-1.5">
+                            <span>🎙️</span>
+                            <span>Voice & Audio Alignment</span>
+                        </h4>
+                        <span class="text-[10px] font-mono text-gray-400 bg-gray-800 px-2 py-0.5 rounded">Wav2Vec2 Analysis</span>
+                    </div>
+                    <p class="text-xs text-gray-400 mb-3">Acoustic waveform synchronization with visual speech gestures.</p>
+                    <img id="imgAudioAttention" src="" alt="Audio Attention" class="w-full h-56 rounded-lg bg-black object-contain border border-gray-800">
                 </div>
             </div>
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="glass-panel rounded-xl p-4 text-center">
-                    <span class="text-xs text-gray-400 font-medium">Authentic Confidence</span>
-                    <div id="statRealPct" class="text-2xl font-black text-emerald-400 font-mono mt-1">87.6%</div>
-                    <div class="text-[10px] text-gray-500 mt-1">Model Real Probability</div>
-                </div>
-                <div class="glass-panel rounded-xl p-4 text-center">
-                    <span class="text-xs text-gray-400 font-medium">Synthetic Probability</span>
-                    <div id="statFakePct" class="text-2xl font-black text-sky-400 font-mono mt-1">12.4%</div>
-                    <div class="text-[10px] text-gray-500 mt-1">Model Fake Probability</div>
-                </div>
-                <div class="glass-panel rounded-xl p-4 text-center">
-                    <span class="text-xs text-gray-400 font-medium">Texture Realism (FFT)</span>
-                    <div id="statTextureScore" class="text-2xl font-black text-cyan-400 font-mono mt-1">82.0%</div>
-                    <div class="text-[10px] text-gray-500 mt-1">Sensor Noise vs Smoothing</div>
-                </div>
-                <div class="glass-panel rounded-xl p-4 text-center">
-                    <span class="text-xs text-gray-400 font-medium">Motion Stability</span>
-                    <div id="statStabilityScore" class="text-2xl font-black text-indigo-400 font-mono mt-1">94.5%</div>
-                    <div class="text-[10px] text-gray-500 mt-1">Inter-frame Continuity</div>
-                </div>
-            </div>            <div class="glass-panel rounded-2xl p-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-                    <div>
-                        <h3 class="text-base font-bold text-white">Anatomical Facial Saliency (Vision Transformer Focus)</h3>
-                        <p class="text-xs text-gray-400">Where the model allocated attention across physiological facial zones.</p>
-                    </div>
-                    <span id="primaryZoneTag" class="mt-2 sm:mt-0 text-xs font-mono font-semibold text-sky-400 bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20">Primary Focus: Balanced Landmarks</span>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800">
-                        <div class="flex justify-between items-center text-xs mb-1">
-                            <span class="text-gray-300 font-semibold">Face Blending Boundary</span>
-                            <span id="salBoundaryPct" class="font-mono text-sky-400 font-bold">18.5%</span>
-                        </div>
-                        <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barBoundary" class="bg-sky-500 h-2 rounded-full" style="width: 18%"></div></div>
-                        <p class="text-[11px] text-gray-500">Seam where synthetic face is pasted onto head</p>
-                    </div>
-                    <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800">
-                        <div class="flex justify-between items-center text-xs mb-1">
-                            <span class="text-gray-300 font-semibold">Ocular (Eyes & Brows)</span>
-                            <span id="salOcularPct" class="font-mono text-sky-400 font-bold">28.2%</span>
-                        </div>
-                        <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barOcular" class="bg-indigo-500 h-2 rounded-full" style="width: 28%"></div></div>
-                        <p class="text-[11px] text-gray-500">Gaze stability, blinking rate, ocular geometry</p>
-                    </div>
-                    <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800">
-                        <div class="flex justify-between items-center text-xs mb-1">
-                            <span class="text-gray-300 font-semibold">Perioral (Mouth & Lips)</span>
-                            <span id="salPerioralPct" class="font-mono text-sky-400 font-bold">24.1%</span>
-                        </div>
-                        <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barPerioral" class="bg-cyan-500 h-2 rounded-full" style="width: 24%"></div></div>
-                        <p class="text-[11px] text-gray-500">Phoneme-viseme articulation and lip-sync</p>
-                    </div>
-                    <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800">
-                        <div class="flex justify-between items-center text-xs mb-1">
-                            <span class="text-gray-300 font-semibold">Midface (Nose & Cheeks)</span>
-                            <span id="salMidfacePct" class="font-mono text-sky-400 font-bold">29.2%</span>
-                        </div>
-                        <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barMidface" class="bg-emerald-500 h-2 rounded-full" style="width: 29%"></div></div>
-                        <p class="text-[11px] text-gray-500">Skin pore texture, lighting reflectance</p>
-                    </div>
-                </div>
-            </div>
-            <div class="glass-panel rounded-2xl p-6">
-                <h3 class="text-base font-bold text-white mb-4">Deep Explainability Visualizations (XAI)</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex flex-col justify-between">
-                        <div>
-                            <h4 class="text-xs font-bold text-gray-200 mb-1">1. Spatial Attention Heatmap</h4>
-                            <p class="text-[11px] text-gray-400 mb-3">ViT Attention rollout across 14&times;14 facial patches on peak frame.</p>
-                        </div>
-                        <img id="imgVisualAttention" src="" alt="Visual Attention Saliency" class="w-full h-56 rounded-lg bg-black object-contain border border-gray-800">
-                    </div>
-                    <div class="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex flex-col justify-between">
-                        <div>
-                            <h4 class="text-xs font-bold text-gray-200 mb-1">2. Temporal Timeline</h4>
-                            <p class="text-[11px] text-gray-400 mb-3">Frame-by-frame manipulation likelihood over time.</p>
-                        </div>
-                        <img id="imgTemporalTimeline" src="" alt="Temporal Timeline" class="w-full h-56 rounded-lg bg-black object-contain border border-gray-800">
-                    </div>
-                    <div class="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex flex-col justify-between">
-                        <div>
-                            <h4 class="text-xs font-bold text-gray-200 mb-1">3. Acoustic Importance</h4>
-                            <p class="text-[11px] text-gray-400 mb-3">Wav2Vec2 acoustic weights & cross-modal alignment.</p>
-                        </div>
-                        <img id="imgAudioAttention" src="" alt="Audio Attention" class="w-full h-56 rounded-lg bg-black object-contain border border-gray-800">
-                    </div>
-                </div>
-            </div>
+
+            <!-- 4. ACTION BUTTONS -->
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                <a id="downloadReportBtn" href="#" target="_blank" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white font-semibold text-xs flex items-center justify-center space-x-2 transition shadow-lg">
+                <a id="downloadReportBtn" href="#" target="_blank" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white font-semibold text-xs flex items-center justify-center space-x-2 transition shadow-lg">
                     <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                     <span>Download Full Standalone Forensic Report (HTML)</span>
                 </a>
-                <button type="button" id="resetBtn" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-sky-600/20 hover:bg-sky-600/30 border border-sky-500/40 text-sky-300 font-semibold text-xs flex items-center justify-center space-x-2 transition">
+                <button type="button" id="resetBtn" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-sky-600/20 hover:bg-sky-600/30 border border-sky-500/40 text-sky-300 font-semibold text-xs flex items-center justify-center space-x-2 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                     <span>Analyze Another Video</span>
                 </button>
@@ -273,14 +311,19 @@
         const verdictBadge = document.getElementById('verdictBadge');
         const resultVideoName = document.getElementById('resultVideoName');
         const verdictTitle = document.getElementById('verdictTitle');
-        const verdictSubtitle = document.getElementById('verdictSubtitle');
-        const realPctBig = document.getElementById('realPctBig');
+        const verdictPill = document.getElementById('verdictPill');
+        const verdictPillText = document.getElementById('verdictPillText');
+        const verdictPrimaryLabel = document.getElementById('verdictPrimaryLabel');
+        const verdictPrimaryVal = document.getElementById('verdictPrimaryVal');
+        const quickRealPct = document.getElementById('quickRealPct');
+        const quickFakePct = document.getElementById('quickFakePct');
+        const quickThreshold = document.getElementById('quickThreshold');
+        const whySection = document.getElementById('whySection');
+        const whyIcon = document.getElementById('whyIcon');
+        const whyTitle = document.getElementById('whyTitle');
+        const whyVerdictPill = document.getElementById('whyVerdictPill');
         const executiveSummaryText = document.getElementById('executiveSummaryText');
-        const indicatorsList = document.getElementById('indicatorsList');
-        const statRealPct = document.getElementById('statRealPct');
-        const statFakePct = document.getElementById('statFakePct');
-        const statTextureScore = document.getElementById('statTextureScore');
-        const statStabilityScore = document.getElementById('statStabilityScore');
+        const reasonsGrid = document.getElementById('reasonsGrid');
         const primaryZoneTag = document.getElementById('primaryZoneTag');
         const salBoundaryPct = document.getElementById('salBoundaryPct');
         const salOcularPct = document.getElementById('salOcularPct');
@@ -293,6 +336,7 @@
         const imgVisualAttention = document.getElementById('imgVisualAttention');
         const imgTemporalTimeline = document.getElementById('imgTemporalTimeline');
         const imgAudioAttention = document.getElementById('imgAudioAttention');
+        const audioCard = document.getElementById('audioCard');
         const downloadReportBtn = document.getElementById('downloadReportBtn');
         const resetBtn = document.getElementById('resetBtn');
         let selectedFile = null;
@@ -373,41 +417,61 @@
 
         function renderResults(data) {
             const isFake = data.is_fake;
-            verdictBanner.className = `rounded-2xl p-6 sm:p-8 glass-panel border-2 transition-all duration-300 ${isFake ? 'glow-fake border-red-500/60' : 'glow-real border-emerald-500/60'}`;
-            verdictBadge.className = `text-sm font-black uppercase tracking-wider px-3 py-1 rounded-full text-white ${isFake ? 'bg-red-600' : 'bg-emerald-600'}`;
+
+            // 1. Top Verdict Banner
+            verdictBanner.className = `rounded-2xl p-6 sm:p-8 glass-panel border-2 transition-all duration-300 ${isFake ? 'glow-fake border-red-500/70' : 'glow-real border-emerald-500/70'}`;
+            verdictBadge.className = `text-sm font-black uppercase tracking-wider px-3.5 py-1 rounded-full text-white shadow-md ${isFake ? 'bg-red-600' : 'bg-emerald-600'}`;
             verdictBadge.textContent = isFake ? 'MANIPULATED (DEEPFAKE)' : 'AUTHENTIC (REAL)';
             resultVideoName.textContent = data.filename;
-            verdictTitle.textContent = isFake ? 'Video Flagged as Manipulated' : 'Video Verified as Authentic';
-            verdictSubtitle.textContent = `Synthetic Probability: ${data.fake_pct}% | Decision Threshold: ${data.threshold_pct}%`;
-            realPctBig.textContent = `${data.real_pct}%`;
-            realPctBig.className = `text-3xl sm:text-4xl font-extrabold font-mono ${isFake ? 'text-red-400' : 'text-emerald-400'}`;
+            verdictTitle.textContent = isFake ? 'Video Flagged as Manipulated (Deepfake)' : 'Video Verified as Authentic (Real)';
+
+            verdictPill.className = `inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold border ${isFake ? 'bg-red-500/10 text-red-400 border-red-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`;
+            verdictPillText.textContent = isFake
+                ? `Fake Probability ${data.fake_pct}% EXCEEDS Threshold ${data.threshold_pct}% → FLAGGED AS FAKE`
+                : `Fake Probability ${data.fake_pct}% is SAFELY BELOW Threshold ${data.threshold_pct}% → VERIFIED AS REAL`;
+
+            verdictPrimaryLabel.textContent = isFake ? 'Synthetic Probability' : 'Authentic Confidence';
+            verdictPrimaryVal.textContent = isFake ? `${data.fake_pct}%` : `${data.real_pct}%`;
+            verdictPrimaryVal.className = `text-3xl sm:text-4xl font-extrabold font-mono ${isFake ? 'text-red-400' : 'text-emerald-400'}`;
+
+            quickRealPct.textContent = `${data.real_pct}%`;
+            quickFakePct.textContent = `${data.fake_pct}%`;
+            quickFakePct.className = `text-xl sm:text-2xl font-black font-mono mt-0.5 ${isFake ? 'text-red-400' : 'text-sky-400'}`;
+            quickThreshold.textContent = `${data.threshold_pct}%`;
+
+            // 2. Plain-English "Why is this video Real / Fake?" Section
+            whySection.className = `glass-panel rounded-2xl p-6 sm:p-8 border-l-4 transition-all ${isFake ? 'border-l-red-500' : 'border-l-emerald-500'}`;
+            whyIcon.textContent = isFake ? '⚠️' : '💡';
+            whyTitle.textContent = isFake ? 'Why is this video classified as FAKE?' : 'Why is this video classified as REAL?';
+            whyVerdictPill.className = `self-start sm:self-auto text-xs font-mono font-bold px-3 py-1 rounded-full border ${isFake ? 'bg-red-500/15 text-red-400 border-red-500/40' : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/40'}`;
+            whyVerdictPill.textContent = isFake ? 'MANIPULATION DETECTED' : 'GENUINE VIDEO VERIFIED';
 
             executiveSummaryText.textContent = data.executive_summary;
-            indicatorsList.innerHTML = '';
-            if (data.forensic_indicators && data.forensic_indicators.length) {
-                data.forensic_indicators.forEach(ind => {
-                    const li = document.createElement('li');
-                    li.className = 'flex items-start space-x-2';
-                    li.innerHTML = `<span class="text-sky-400 mt-0.5">&bull;</span><span class="text-gray-300 font-mono text-[11px]">${ind}</span>`;
-                    indicatorsList.appendChild(li);
+
+            // Render simple reasons grid
+            reasonsGrid.innerHTML = '';
+            const reasons = data.simple_reasons || [];
+            if (reasons.length) {
+                reasons.forEach(r => {
+                    const isPass = r.status === 'PASS';
+                    const col = isPass ? 'text-emerald-400' : 'text-red-400';
+                    const bg = isPass ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-red-500/10 border-red-500/30';
+                    const badge = isPass ? 'PASS' : 'ALERT';
+
+                    const card = document.createElement('div');
+                    card.className = 'bg-gray-900/70 p-4 rounded-xl border border-gray-800/80 flex flex-col justify-between';
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-white">${r.title}</span>
+                            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${col} ${bg}">${badge}</span>
+                        </div>
+                        <p class="text-xs text-gray-300 leading-relaxed">${r.detail}</p>
+                    `;
+                    reasonsGrid.appendChild(card);
                 });
-            } else {
-                indicatorsList.innerHTML = '<li class="text-gray-500">No anomaly flags detected.</li>';
             }
 
-            statRealPct.textContent = `${data.real_pct}%`;
-            statRealPct.className = `text-2xl font-black font-mono mt-1 ${isFake ? 'text-gray-400' : 'text-emerald-400'}`;
-            statFakePct.textContent = `${data.fake_pct}%`;
-            statFakePct.className = `text-2xl font-black font-mono mt-1 ${isFake ? 'text-red-400' : 'text-sky-400'}`;
-
-            const tex = data.texture_and_frequency.texture_coherence_score;
-            statTextureScore.textContent = `${tex}%`;
-            statTextureScore.className = `text-2xl font-black font-mono mt-1 ${tex > 70 ? 'text-cyan-400' : 'text-amber-400'}`;
-
-            const stab = data.temporal_dynamics.stability_score;
-            statStabilityScore.textContent = `${stab}%`;
-            statStabilityScore.className = `text-2xl font-black font-mono mt-1 ${stab > 70 ? 'text-indigo-400' : 'text-amber-400'}`;
-
+            // 3. Facial Saliency Breakdown
             const sal = data.anatomical_saliency;
             primaryZoneTag.textContent = `Primary Focus: ${sal.primary_region}`;
             salBoundaryPct.textContent = `${sal.boundary_pct}%`;
@@ -422,9 +486,19 @@
             salMidfacePct.textContent = `${sal.midface_pct}%`;
             barMidface.style.width = `${Math.min(100, sal.midface_pct)}%`;
 
-            if (data.visualizations.visual_attention_b64) imgVisualAttention.src = 'data:image/png;base64,' + data.visualizations.visual_attention_b64;
-            if (data.visualizations.temporal_timeline_b64) imgTemporalTimeline.src = 'data:image/png;base64,' + data.visualizations.temporal_timeline_b64;
-            if (data.visualizations.audio_attention_b64) imgAudioAttention.src = 'data:image/png;base64,' + data.visualizations.audio_attention_b64;
+            // 4. Visual Evidence Charts
+            if (data.visualizations.temporal_timeline_b64) {
+                imgTemporalTimeline.src = 'data:image/png;base64,' + data.visualizations.temporal_timeline_b64;
+            }
+            if (data.visualizations.visual_attention_b64) {
+                imgVisualAttention.src = 'data:image/png;base64,' + data.visualizations.visual_attention_b64;
+            }
+            if (data.visualizations.audio_attention_b64) {
+                imgAudioAttention.src = 'data:image/png;base64,' + data.visualizations.audio_attention_b64;
+                audioCard.classList.remove('hidden');
+            } else {
+                audioCard.classList.add('hidden');
+            }
 
             downloadReportBtn.href = data.report_download_url;
             resultsSection.classList.remove('hidden');
