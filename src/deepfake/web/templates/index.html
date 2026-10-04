@@ -8,19 +8,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-page: #080c16;
-            --bg-mesh: radial-gradient(circle at 50% -20%, rgba(139, 92, 246, 0.10) 0%, transparent 60%), radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.06) 0%, transparent 50%);
-            --bg-panel: rgba(15, 23, 42, 0.75);
-            --border-main: rgba(255, 255, 255, 0.08);
-            --header-bg: rgba(8, 12, 22, 0.85);
-            --glow-real: 0 0 30px -5px rgba(16, 185, 129, 0.25);
-            --glow-fake: 0 0 30px -5px rgba(239, 68, 68, 0.25);
+            --bg-page: #f8fafc;
+            --bg-mesh: radial-gradient(circle at 50% -20%, rgba(99, 102, 241, 0.06) 0%, transparent 60%), radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+            --bg-panel: rgba(255, 255, 255, 0.95);
+            --border-main: rgba(226, 232, 240, 0.9);
+            --header-bg: rgba(255, 255, 255, 0.9);
+            --glow-real: 0 4px 25px -4px rgba(16, 185, 129, 0.25);
+            --glow-fake: 0 4px 25px -4px rgba(239, 68, 68, 0.25);
         }
 
         body {
             background-color: var(--bg-page);
             background-image: var(--bg-mesh);
-            color: #f8fafc;
+            color: #0f172a;
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             -webkit-font-smoothing: antialiased;
         }
@@ -35,181 +35,188 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-main) !important;
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
         }
 
-        .glow-real { box-shadow: var(--glow-real); border-color: rgba(16, 185, 129, 0.5) !important; }
-        .glow-fake { box-shadow: var(--glow-fake); border-color: rgba(239, 68, 68, 0.5) !important; }
+        .glow-real { box-shadow: var(--glow-real); border-color: rgba(16, 185, 129, 0.45) !important; }
+        .glow-fake { box-shadow: var(--glow-fake); border-color: rgba(239, 68, 68, 0.45) !important; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
-    <header class="border-b border-gray-800/80 bg-gray-950/60 backdrop-blur sticky top-0 z-50">
+    <header class="border-b border-slate-200/80 bg-white/90 backdrop-blur sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-slate-900 to-indigo-900 flex items-center justify-center shadow-md shadow-slate-900/10">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <span class="text-base sm:text-lg font-bold tracking-tight text-white">Deepfake Detection Framework</span>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20 font-mono font-semibold">XAI</span>
+                    <span class="text-base sm:text-lg font-bold tracking-tight text-slate-900">Deepfake Detection Framework</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-mono font-semibold">XAI</span>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
-                <a href="/docs" target="_blank" class="text-xs text-gray-400 hover:text-violet-400 transition font-mono flex items-center space-x-1">
+                <a href="/docs" target="_blank" class="text-xs text-slate-500 hover:text-indigo-600 transition font-mono flex items-center space-x-1 font-medium">
                     <span>API Docs</span>
                     <span>&rarr;</span>
                 </a>
             </div>
         </div>
     </header>
+
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
         <!-- Minimal Heading (Only Project Name) -->
         <div class="text-center max-w-xl mx-auto mb-8 pt-2">
-            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mb-2">
                 Deepfake Detection Framework
             </h1>
-            <p class="text-xs sm:text-sm text-gray-400">
+            <p class="text-xs sm:text-sm text-slate-500 font-medium">
                 Multimodal Video Forensics & Explainable AI
             </p>
         </div>
+
         <div class="max-w-3xl mx-auto mb-10">
-            <div class="glass-panel rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+            <div class="glass-panel rounded-2xl p-6 sm:p-8 relative overflow-hidden bg-white">
                 <form id="uploadForm" class="space-y-6">
-                    <div id="dropZone" class="border-2 border-dashed border-gray-700 hover:border-violet-500/60 rounded-xl p-8 text-center cursor-pointer transition-all duration-200 bg-gray-950/40 hover:bg-violet-950/10 group">
+                    <div id="dropZone" class="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-xl p-8 text-center cursor-pointer transition-all duration-200 bg-slate-50/70 hover:bg-indigo-50/30 group">
                         <input type="file" id="videoFileInput" accept="video/mp4,video/avi,video/quicktime,video/x-matroska,video/webm" class="hidden">
                         <div id="uploadPrompt">
-                            <div class="w-16 h-16 rounded-full bg-gray-800/80 group-hover:bg-violet-500/20 text-gray-400 group-hover:text-violet-400 flex items-center justify-center mx-auto mb-4 transition">
+                            <div class="w-16 h-16 rounded-full bg-white border border-slate-200 shadow-sm group-hover:border-indigo-200 group-hover:bg-indigo-50/50 text-slate-400 group-hover:text-indigo-600 flex items-center justify-center mx-auto mb-4 transition">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
                             </div>
-                            <h3 class="text-base font-semibold text-white mb-1">Click to upload or drag & drop video</h3>
-                            <p class="text-xs text-gray-400">Supported formats: MP4, AVI, MOV, MKV, WebM</p>
+                            <h3 class="text-base font-semibold text-slate-800 mb-1">Click to upload or drag & drop video</h3>
+                            <p class="text-xs text-slate-500">Supported formats: MP4, AVI, MOV, MKV, WebM</p>
                         </div>
                         <div id="previewContainer" class="hidden text-left">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center space-x-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                                    <span id="selectedFileName" class="text-xs font-mono text-gray-300 truncate max-w-xs font-semibold">video.mp4</span>
-                                    <span id="selectedFileSize" class="text-xs text-gray-500"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                    <span id="selectedFileName" class="text-xs font-mono text-slate-800 truncate max-w-xs font-semibold">video.mp4</span>
+                                    <span id="selectedFileSize" class="text-xs text-slate-500"></span>
                                 </div>
-                                <button type="button" id="removeFileBtn" class="text-xs text-red-400 hover:text-red-300 font-medium transition">Remove file</button>
+                                <button type="button" id="removeFileBtn" class="text-xs text-rose-600 hover:text-rose-700 font-medium transition">Remove file</button>
                             </div>
-                            <video id="videoPreview" controls class="w-full max-h-64 rounded-lg bg-black border border-gray-800 object-contain"></video>
+                            <video id="videoPreview" controls class="w-full max-h-64 rounded-lg bg-black border border-slate-200 object-contain"></video>
                         </div>
-                    </div>                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800/80">
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
                         <div class="flex items-center justify-between mb-2">
                             <div>
-                                <label for="thresholdSlider" class="text-xs font-semibold text-gray-200">Fake Detection Threshold</label>
-                                <p class="text-[11px] text-gray-400">Probability required to declare video FAKE (Default: 0.65 for unseen videos)</p>
+                                <label for="thresholdSlider" class="text-xs font-semibold text-slate-800">Fake Detection Threshold</label>
+                                <p class="text-[11px] text-slate-500">Probability required to declare video FAKE (Default: 0.65 for unseen videos)</p>
                             </div>
-                            <span id="thresholdVal" class="text-sm font-mono font-bold text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded border border-violet-500/20">65%</span>
+                            <span id="thresholdVal" class="text-sm font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">65%</span>
                         </div>
-                        <input type="range" id="thresholdSlider" min="0.30" max="0.90" step="0.05" value="0.65" class="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-violet-500">
-                        <div class="flex justify-between text-[10px] text-gray-500 font-mono mt-1">
+                        <input type="range" id="thresholdSlider" min="0.30" max="0.90" step="0.05" value="0.65" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                        <div class="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
                             <span>Strict (30%)</span>
                             <span>Standard (50%)</span>
                             <span>Conservative / Unseen (65%)</span>
                             <span>High Precision (90%)</span>
                         </div>
                     </div>
-                    <button type="submit" id="analyzeBtn" class="w-full py-3.5 px-6 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-violet-600 via-purple-600 to-violet-600 hover:from-violet-500 hover:to-purple-500 shadow-lg shadow-violet-500/25 transition duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+
+                    <button type="submit" id="analyzeBtn" class="w-full py-3.5 px-6 rounded-xl font-bold text-sm text-white bg-slate-900 hover:bg-slate-800 shadow-md shadow-slate-900/10 transition duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         <span>Analyze Video</span>
                     </button>
                 </form>
             </div>
         </div>
+
         <div id="loadingSection" class="hidden max-w-2xl mx-auto my-12 text-center">
-            <div class="glass-panel rounded-2xl p-8 shadow-2xl border border-violet-500/20">
-                <div class="relative w-20 h-20 mx-auto mb-6">
-                    <div class="w-20 h-20 rounded-full border-4 border-gray-800 border-t-violet-500 animate-spin"></div>
+            <div class="glass-panel rounded-2xl p-8 bg-white border border-slate-200">
+                <div class="relative w-16 h-16 mx-auto mb-5">
+                    <div class="w-16 h-16 rounded-full border-4 border-slate-200 border-t-indigo-600 animate-spin"></div>
                 </div>
-                <h3 id="loadingTitle" class="text-lg font-bold text-white mb-2">Analyzing Video Forensics...</h3>
-                <p id="loadingSub" class="text-xs text-gray-400 font-mono mb-4">Extracting 16-frame sequence & temporal face tracking</p>
-                <div class="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
-                    <div id="progressBar" class="bg-gradient-to-r from-violet-500 to-purple-500 h-2 rounded-full transition-all duration-300" style="width: 25%"></div>
+                <h3 id="loadingTitle" class="text-lg font-bold text-slate-900 mb-1.5">Analyzing Video Forensics...</h3>
+                <p id="loadingSub" class="text-xs text-slate-500 font-mono mb-4">Extracting 16-frame sequence & temporal face tracking</p>
+                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                    <div id="progressBar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 25%"></div>
                 </div>
             </div>
         </div>
+
         <div id="resultsSection" class="hidden space-y-8 max-w-5xl mx-auto">
             <!-- 1. TOP VERDICT BANNER -->
-            <div id="verdictBanner" class="rounded-2xl p-6 sm:p-8 glass-panel border-2 transition-all duration-300">
+            <div id="verdictBanner" class="rounded-2xl p-6 sm:p-8 glass-panel border-2 transition-all duration-300 bg-white">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div class="space-y-2">
                         <div class="flex items-center space-x-3">
-                            <span id="verdictBadge" class="text-sm font-black uppercase tracking-wider px-3.5 py-1 rounded-full text-white shadow-md">AUTHENTIC</span>
-                            <span id="resultVideoName" class="text-xs text-gray-400 font-mono">video.mp4</span>
+                            <span id="verdictBadge" class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full text-white shadow-sm">AUTHENTIC</span>
+                            <span id="resultVideoName" class="text-xs text-slate-500 font-mono font-medium">video.mp4</span>
                         </div>
-                        <h2 id="verdictTitle" class="text-2xl sm:text-3xl font-black text-white">Video Verified as Authentic (Real)</h2>
+                        <h2 id="verdictTitle" class="text-2xl sm:text-3xl font-extrabold text-slate-900">Video Verified as Authentic (Real)</h2>
                         <div id="verdictPill" class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold border">
                             <span id="verdictPillText">Fake Likelihood 12.4% is safely below Threshold 65.0%</span>
                         </div>
                     </div>
-                    <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 border-gray-800 pt-4 sm:pt-0">
-                        <span id="verdictPrimaryLabel" class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Authentic Confidence</span>
-                        <span id="verdictPrimaryVal" class="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-mono">87.6%</span>
+                    <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 border-slate-200 pt-4 sm:pt-0">
+                        <span id="verdictPrimaryLabel" class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Authentic Confidence</span>
+                        <span id="verdictPrimaryVal" class="text-3xl sm:text-4xl font-extrabold text-emerald-600 font-mono">87.6%</span>
                     </div>
                 </div>
 
                 <!-- 3 Quick Comparison Metrics: Real, Fake, Threshold -->
-                <div class="grid grid-cols-3 gap-3 mt-6 pt-6 border-t border-gray-800/80">
-                    <div class="bg-gray-900/60 p-3.5 rounded-xl border border-gray-800 text-center">
-                        <div class="text-[11px] text-gray-400 font-medium">Real Confidence</div>
-                        <div id="quickRealPct" class="text-xl sm:text-2xl font-black text-emerald-400 font-mono mt-0.5">87.6%</div>
+                <div class="grid grid-cols-3 gap-3 mt-6 pt-6 border-t border-slate-200">
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-center">
+                        <div class="text-[11px] text-slate-500 font-medium">Real Confidence</div>
+                        <div id="quickRealPct" class="text-xl sm:text-2xl font-black text-emerald-600 font-mono mt-0.5">87.6%</div>
                     </div>
-                    <div class="bg-gray-900/60 p-3.5 rounded-xl border border-gray-800 text-center">
-                        <div class="text-[11px] text-gray-400 font-medium">Fake Probability</div>
-                        <div id="quickFakePct" class="text-xl sm:text-2xl font-black text-violet-400 font-mono mt-0.5">12.4%</div>
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-center">
+                        <div class="text-[11px] text-slate-500 font-medium">Fake Probability</div>
+                        <div id="quickFakePct" class="text-xl sm:text-2xl font-black text-indigo-600 font-mono mt-0.5">12.4%</div>
                     </div>
-                    <div class="bg-gray-900/60 p-3.5 rounded-xl border border-gray-800 text-center">
-                        <div class="text-[11px] text-gray-400 font-medium">Decision Threshold</div>
-                        <div id="quickThreshold" class="text-xl sm:text-2xl font-black text-purple-400 font-mono mt-0.5">65.0%</div>
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-center">
+                        <div class="text-[11px] text-slate-500 font-medium">Decision Threshold</div>
+                        <div id="quickThreshold" class="text-xl sm:text-2xl font-black text-slate-800 font-mono mt-0.5">65.0%</div>
                     </div>
                 </div>
 
                 <!-- Live Interactive Threshold Adjuster -->
-                <div class="mt-6 pt-5 border-t border-gray-800/80 bg-gray-950/40 p-4 rounded-xl border border-gray-800/60">
+                <div class="mt-6 pt-5 border-t border-slate-200 bg-slate-50/70 p-4 rounded-xl border border-slate-200">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                         <div>
-                            <span class="text-xs font-bold text-white flex items-center space-x-1.5">
+                            <span class="text-xs font-bold text-slate-900 flex items-center space-x-1.5">
                                 <span>🎚️</span>
                                 <span>Test Different Cutoff Thresholds (Instant Live Update)</span>
                             </span>
-                            <p class="text-[11px] text-gray-400">Drag to test how this video is categorized at different decision sensitivity levels.</p>
+                            <p class="text-[11px] text-slate-500">Drag to test how this video is categorized at different decision sensitivity levels.</p>
                         </div>
-                        <span id="liveThresholdDisplay" class="text-xs font-mono font-bold text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded border border-purple-500/30">Threshold: 65%</span>
+                        <span id="liveThresholdDisplay" class="text-xs font-mono font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded border border-indigo-200">Threshold: 65%</span>
                     </div>
-                    <input type="range" id="liveThresholdSlider" min="0.05" max="0.95" step="0.05" value="0.65" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500">
-                    <div class="flex justify-between text-[10px] text-gray-500 font-mono mt-1">
+                    <input type="range" id="liveThresholdSlider" min="0.05" max="0.95" step="0.05" value="0.65" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                    <div class="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
                         <span>Strict (5%)</span>
                         <span>Strict (30%)</span>
                         <span>Standard (50%)</span>
                         <span>Unseen (65%)</span>
                         <span>High Precision (90%)</span>
                     </div>
-                    <div class="mt-3 text-[11px] text-gray-300 bg-gray-900/80 p-3 rounded-lg border border-gray-800 flex items-start space-x-2.5">
-                        <span class="text-violet-400 font-bold text-sm leading-none mt-0.5">💡</span>
+                    <div class="mt-3 text-[11px] text-slate-700 bg-white p-3 rounded-lg border border-slate-200 flex items-start space-x-2.5 shadow-sm">
+                        <span class="text-indigo-600 font-bold text-sm leading-none mt-0.5">💡</span>
                         <div class="leading-relaxed">
-                            <strong>Why does the video's measured score (<span id="noteFakePct" class="font-mono text-violet-400 font-bold">12.4%</span>) stay the same?</strong><br>
-                            The percentage measures the video's physical pixels & audio—it doesn't change when you move the threshold. The <strong>Threshold</strong> is the decision cutoff: if the video's Fake Score &ge; Threshold, it is declared <span class="text-red-400 font-bold">FAKE</span>; otherwise <span class="text-emerald-400 font-bold">REAL</span>.
+                            <strong>Why does the video's measured score (<span id="noteFakePct" class="font-mono text-indigo-600 font-bold">12.4%</span>) stay the same?</strong><br>
+                            The percentage measures the video's physical pixels & audio—it doesn't change when you move the threshold. The <strong>Threshold</strong> is the decision cutoff: if the video's Fake Score &ge; Threshold, it is declared <span class="text-rose-600 font-bold">FAKE</span>; otherwise <span class="text-emerald-600 font-bold">REAL</span>.
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- 2. WHY IS THIS VIDEO REAL / FAKE? (PLAIN-ENGLISH EXPLANATION) -->
-            <div id="whySection" class="glass-panel rounded-2xl p-6 sm:p-8 border-l-4 transition-all">
+            <div id="whySection" class="glass-panel rounded-2xl p-6 sm:p-8 border-l-4 transition-all bg-white">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                     <div class="flex items-center space-x-2">
                         <span class="text-2xl" id="whyIcon">💡</span>
                         <div>
-                            <h3 id="whyTitle" class="text-lg sm:text-xl font-extrabold text-white">Why is this video REAL?</h3>
-                            <p class="text-xs text-gray-400">Plain-English breakdown of forensic evidence and why this decision was reached.</p>
+                            <h3 id="whyTitle" class="text-lg sm:text-xl font-extrabold text-slate-900">Why is this video REAL?</h3>
+                            <p class="text-xs text-slate-500">Plain-English breakdown of forensic evidence and why this decision was reached.</p>
                         </div>
                     </div>
                     <span id="whyVerdictPill" class="self-start sm:self-auto text-xs font-mono font-bold px-3 py-1 rounded-full border">VERIFIED AUTHENTIC</span>
                 </div>
 
-                <p id="executiveSummaryText" class="text-sm leading-relaxed text-gray-200 mb-6 bg-gray-900/70 p-4 rounded-xl border border-gray-800/80">Loading...</p>
+                <p id="executiveSummaryText" class="text-sm leading-relaxed text-slate-700 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200 font-medium">Loading...</p>
 
                 <!-- 4 Plain-English Reason Cards -->
                 <div id="reasonsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -218,129 +225,131 @@
             </div>
 
             <!-- 3. VISUAL FORENSIC CHARTS & EVIDENCE -->
-            <div class="glass-panel rounded-2xl p-6 sm:p-8 space-y-6">
+            <div class="glass-panel rounded-2xl p-6 sm:p-8 space-y-6 bg-white">
                 <div>
-                    <h3 class="text-lg font-bold text-white flex items-center space-x-2">
-                        <svg class="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
                         <span>Visual Forensic Charts & Evidence</span>
                     </h3>
-                    <p class="text-xs text-gray-400 mt-1">Graphical inspections showing frame-by-frame risk, facial focus areas, and regional breakdown.</p>
+                    <p class="text-xs text-slate-500 mt-1">Graphical inspections showing frame-by-frame risk, facial focus areas, and regional breakdown.</p>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Chart 1: Frame-by-Frame Timeline -->
-                    <div class="bg-gray-900/60 rounded-xl p-5 border border-gray-800 flex flex-col justify-between">
+                    <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-1">
-                                <h4 class="text-sm font-bold text-white flex items-center space-x-1.5">
+                                <h4 class="text-sm font-bold text-slate-900 flex items-center space-x-1.5">
                                     <span>📈</span>
                                     <span>Frame-by-Frame Timeline</span>
                                 </h4>
-                                <span class="text-[10px] font-mono text-gray-400 bg-gray-800 px-2 py-0.5 rounded">Timeline Analysis</span>
+                                <span class="text-[10px] font-mono text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded shadow-sm">Timeline Analysis</span>
                             </div>
-                            <p class="text-xs text-gray-400 mb-3">Tracks synthetic likelihood across each second of video against your threshold.</p>
+                            <p class="text-xs text-slate-500 mb-3">Tracks synthetic likelihood across each second of video against your threshold.</p>
                         </div>
-                        <img id="imgTemporalTimeline" src="" alt="Temporal Timeline" class="w-full h-64 rounded-lg bg-black object-contain border border-gray-800">
+                        <img id="imgTemporalTimeline" src="" alt="Temporal Timeline" class="w-full h-64 rounded-lg bg-white object-contain border border-slate-200">
                     </div>
 
                     <!-- Chart 2: AI Attention Heatmap -->
-                    <div class="bg-gray-900/60 rounded-xl p-5 border border-gray-800 flex flex-col justify-between">
+                    <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-1">
-                                <h4 class="text-sm font-bold text-white flex items-center space-x-1.5">
+                                <h4 class="text-sm font-bold text-slate-900 flex items-center space-x-1.5">
                                     <span>🎯</span>
                                     <span>AI Attention Heatmap</span>
                                 </h4>
-                                <span class="text-[10px] font-mono text-gray-400 bg-gray-800 px-2 py-0.5 rounded">Where AI Looked</span>
+                                <span class="text-[10px] font-mono text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded shadow-sm">Where AI Looked</span>
                             </div>
-                            <p class="text-xs text-gray-400 mb-3">Warmer yellow & red patches reveal where the Vision Transformer focused its scrutiny.</p>
+                            <p class="text-xs text-slate-500 mb-3">Warmer yellow & red patches reveal where the Vision Transformer focused its scrutiny.</p>
                         </div>
-                        <img id="imgVisualAttention" src="" alt="Visual Attention Saliency" class="w-full h-64 rounded-lg bg-black object-contain border border-gray-800">
+                        <img id="imgVisualAttention" src="" alt="Visual Attention Saliency" class="w-full h-64 rounded-lg bg-white object-contain border border-slate-200">
                     </div>
                 </div>
 
                 <!-- Chart 3: Facial Zone Attention Breakdown (Bar Chart) -->
-                <div class="bg-gray-900/60 rounded-xl p-5 border border-gray-800">
+                <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
                         <div>
-                            <h4 class="text-sm font-bold text-white flex items-center space-x-1.5">
+                            <h4 class="text-sm font-bold text-slate-900 flex items-center space-x-1.5">
                                 <span>📊</span>
                                 <span>Facial Zone Attention Breakdown</span>
                             </h4>
-                            <p class="text-xs text-gray-400 mt-0.5">Quantifies attention distributed across facial regions (balanced distribution indicates genuine video).</p>
+                            <p class="text-xs text-slate-500 mt-0.5">Quantifies attention distributed across facial regions (balanced distribution indicates genuine video).</p>
                         </div>
-                        <span id="primaryZoneTag" class="mt-2 sm:mt-0 text-xs font-mono font-semibold text-violet-400 bg-violet-500/10 px-3 py-1 rounded-full border border-violet-500/20">Primary Focus: Balanced Landmarks</span>
+                        <span id="primaryZoneTag" class="mt-2 sm:mt-0 text-xs font-mono font-semibold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">Primary Focus: Balanced Landmarks</span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="bg-gray-950/60 p-3.5 rounded-lg border border-gray-800/80">
+                        <div class="bg-white p-3.5 rounded-lg border border-slate-200 shadow-sm">
                             <div class="flex justify-between items-center text-xs mb-1">
-                                <span class="text-gray-300 font-semibold">Face Border (Cut/Paste)</span>
-                                <span id="salBoundaryPct" class="font-mono text-violet-400 font-bold">18.5%</span>
+                                <span class="text-slate-700 font-semibold">Face Border (Cut/Paste)</span>
+                                <span id="salBoundaryPct" class="font-mono text-indigo-600 font-bold">18.5%</span>
                             </div>
-                            <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barBoundary" class="bg-violet-500 h-2 rounded-full" style="width: 18%"></div></div>
-                            <p class="text-[11px] text-gray-500">Seam where swapped face is blended into head</p>
+                            <div class="w-full bg-slate-100 rounded-full h-2 mb-2 overflow-hidden border border-slate-200"><div id="barBoundary" class="bg-indigo-500 h-2 rounded-full" style="width: 18%"></div></div>
+                            <p class="text-[11px] text-slate-400">Seam where swapped face is blended into head</p>
                         </div>
-                        <div class="bg-gray-950/60 p-3.5 rounded-lg border border-gray-800/80">
+                        <div class="bg-white p-3.5 rounded-lg border border-slate-200 shadow-sm">
                             <div class="flex justify-between items-center text-xs mb-1">
-                                <span class="text-gray-300 font-semibold">Eyes & Brows</span>
-                                <span id="salOcularPct" class="font-mono text-violet-400 font-bold">28.2%</span>
+                                <span class="text-slate-700 font-semibold">Eyes & Brows</span>
+                                <span id="salOcularPct" class="font-mono text-indigo-600 font-bold">28.2%</span>
                             </div>
-                            <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barOcular" class="bg-purple-500 h-2 rounded-full" style="width: 28%"></div></div>
-                            <p class="text-[11px] text-gray-500">Gaze consistency and natural blink rates</p>
+                            <div class="w-full bg-slate-100 rounded-full h-2 mb-2 overflow-hidden border border-slate-200"><div id="barOcular" class="bg-violet-500 h-2 rounded-full" style="width: 28%"></div></div>
+                            <p class="text-[11px] text-slate-400">Gaze consistency and natural blink rates</p>
                         </div>
-                        <div class="bg-gray-950/60 p-3.5 rounded-lg border border-gray-800/80">
+                        <div class="bg-white p-3.5 rounded-lg border border-slate-200 shadow-sm">
                             <div class="flex justify-between items-center text-xs mb-1">
-                                <span class="text-gray-300 font-semibold">Mouth & Lips</span>
-                                <span id="salPerioralPct" class="font-mono text-violet-400 font-bold">24.1%</span>
+                                <span class="text-slate-700 font-semibold">Mouth & Lips</span>
+                                <span id="salPerioralPct" class="font-mono text-indigo-600 font-bold">24.1%</span>
                             </div>
-                            <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barPerioral" class="bg-fuchsia-500 h-2 rounded-full" style="width: 24%"></div></div>
-                            <p class="text-[11px] text-gray-500">Speech articulation and lip-syncing checks</p>
+                            <div class="w-full bg-slate-100 rounded-full h-2 mb-2 overflow-hidden border border-slate-200"><div id="barPerioral" class="bg-amber-500 h-2 rounded-full" style="width: 24%"></div></div>
+                            <p class="text-[11px] text-slate-400">Speech articulation and lip-syncing checks</p>
                         </div>
-                        <div class="bg-gray-950/60 p-3.5 rounded-lg border border-gray-800/80">
+                        <div class="bg-white p-3.5 rounded-lg border border-slate-200 shadow-sm">
                             <div class="flex justify-between items-center text-xs mb-1">
-                                <span class="text-gray-300 font-semibold">Cheeks & Nose</span>
-                                <span id="salMidfacePct" class="font-mono text-violet-400 font-bold">29.2%</span>
+                                <span class="text-slate-700 font-semibold">Cheeks & Nose</span>
+                                <span id="salMidfacePct" class="font-mono text-indigo-600 font-bold">29.2%</span>
                             </div>
-                            <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barMidface" class="bg-emerald-500 h-2 rounded-full" style="width: 29%"></div></div>
-                            <p class="text-[11px] text-gray-500">Natural skin pores and lighting reflectance</p>
+                            <div class="w-full bg-slate-100 rounded-full h-2 mb-2 overflow-hidden border border-slate-200"><div id="barMidface" class="bg-emerald-500 h-2 rounded-full" style="width: 29%"></div></div>
+                            <p class="text-[11px] text-slate-400">Natural skin pores and lighting reflectance</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Chart 4: Audio Alignment (shown if audio available) -->
-                <div id="audioCard" class="hidden bg-gray-900/60 rounded-xl p-5 border border-gray-800">
+                <div id="audioCard" class="hidden bg-slate-50 rounded-xl p-5 border border-slate-200">
                     <div class="flex items-center justify-between mb-2">
-                        <h4 class="text-sm font-bold text-white flex items-center space-x-1.5">
+                        <h4 class="text-sm font-bold text-slate-900 flex items-center space-x-1.5">
                             <span>🎙️</span>
                             <span>Voice & Audio Alignment</span>
                         </h4>
-                        <span class="text-[10px] font-mono text-gray-400 bg-gray-800 px-2 py-0.5 rounded">Wav2Vec2 Analysis</span>
+                        <span class="text-[10px] font-mono text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded shadow-sm">Wav2Vec2 Analysis</span>
                     </div>
-                    <p class="text-xs text-gray-400 mb-3">Acoustic waveform synchronization with visual speech gestures.</p>
-                    <img id="imgAudioAttention" src="" alt="Audio Attention" class="w-full h-56 rounded-lg bg-black object-contain border border-gray-800">
+                    <p class="text-xs text-slate-500 mb-3">Acoustic waveform synchronization with visual speech gestures.</p>
+                    <img id="imgAudioAttention" src="" alt="Audio Attention" class="w-full h-56 rounded-lg bg-white object-contain border border-slate-200">
                 </div>
             </div>
 
             <!-- 4. ACTION BUTTONS -->
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                <a id="downloadReportBtn" href="#" target="_blank" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white font-semibold text-xs flex items-center justify-center space-x-2 transition shadow-lg">
-                    <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                    <span>Download Full Standalone Forensic Report (HTML)</span>
+                <a id="downloadReportBtn" href="#" target="_blank" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-semibold text-xs flex items-center justify-center space-x-2 transition shadow-sm">
+                    <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    <span>Download Standalone Forensic Report (HTML)</span>
                 </a>
-                <button type="button" id="resetBtn" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-violet-600/20 hover:bg-violet-600/30 border border-violet-500/40 text-violet-300 font-semibold text-xs flex items-center justify-center space-x-2 transition">
+                <button type="button" id="resetBtn" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-semibold text-xs flex items-center justify-center space-x-2 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                     <span>Analyze Another Video</span>
                 </button>
             </div>
         </div>
     </main>
-    <footer class="border-t border-gray-800/80 bg-gray-950/80 py-6 text-center text-xs text-gray-500">
+
+    <footer class="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
         <div class="max-w-7xl mx-auto px-4 space-y-1">
-            <p>DeepForensics AI &bull; Deepfake Detection Framework powered by Google ViT, Meta Wav2Vec2, and Explainable AI (XAI)</p>
-            <p class="text-[11px] text-gray-600">Designed for university defense, faculty evaluation, and forensic media verification.</p>
+            <p class="font-medium">Deepfake Detection Framework &bull; Powered by Google ViT, Meta Wav2Vec2, and Explainable AI (XAI)</p>
+            <p class="text-[11px] text-slate-400">Designed for university defense, faculty evaluation, and forensic media verification.</p>
         </div>
     </footer>
+
     <script>
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('videoFileInput');
@@ -421,27 +430,28 @@
             if (liveThresholdDisplay) liveThresholdDisplay.textContent = `Threshold: ${Math.round(newThresh * 100)}%`;
             quickThreshold.textContent = `${threshPct}%`;
 
-            verdictBanner.className = `rounded-2xl p-6 sm:p-8 glass-panel border-2 transition-all duration-300 ${isFake ? 'glow-fake border-red-500/70' : 'glow-real border-emerald-500/70'}`;
-            verdictBadge.className = `text-sm font-black uppercase tracking-wider px-3.5 py-1 rounded-full text-white shadow-md ${isFake ? 'bg-red-600' : 'bg-emerald-600'}`;
+            verdictBanner.className = `rounded-2xl p-6 sm:p-8 glass-panel border-2 transition-all duration-300 bg-white ${isFake ? 'glow-fake border-rose-300' : 'glow-real border-emerald-300'}`;
+            verdictBadge.className = `text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full text-white shadow-sm ${isFake ? 'bg-rose-600' : 'bg-emerald-600'}`;
             verdictBadge.textContent = isFake ? 'MANIPULATED (DEEPFAKE)' : 'AUTHENTIC (REAL)';
             verdictTitle.textContent = isFake ? 'Video Flagged as Manipulated (Deepfake)' : 'Video Verified as Authentic (Real)';
 
-            verdictPill.className = `inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold border ${isFake ? 'bg-red-500/10 text-red-400 border-red-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`;
+            verdictPill.className = `inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold border ${isFake ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`;
             verdictPillText.textContent = isFake
                 ? `Fake Probability ${fakePct}% EXCEEDS Threshold ${threshPct}% → FLAGGED AS FAKE`
                 : `Fake Probability ${fakePct}% is SAFELY BELOW Threshold ${threshPct}% → VERIFIED AS REAL`;
 
-            whySection.className = `glass-panel rounded-2xl p-6 sm:p-8 border-l-4 transition-all ${isFake ? 'border-l-red-500' : 'border-l-emerald-500'}`;
+            whySection.className = `glass-panel rounded-2xl p-6 sm:p-8 border-l-4 transition-all bg-white ${isFake ? 'border-l-rose-500' : 'border-l-emerald-500'}`;
             whyIcon.textContent = isFake ? '⚠️' : '💡';
             whyTitle.textContent = isFake ? 'Why is this video classified as FAKE?' : 'Why is this video classified as REAL?';
-            whyVerdictPill.className = `self-start sm:self-auto text-xs font-mono font-bold px-3 py-1 rounded-full border ${isFake ? 'bg-red-500/15 text-red-400 border-red-500/40' : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/40'}`;
+            whyVerdictPill.className = `self-start sm:self-auto text-xs font-mono font-bold px-3 py-1 rounded-full border ${isFake ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`;
             whyVerdictPill.textContent = isFake ? 'MANIPULATION DETECTED' : 'GENUINE VIDEO VERIFIED';
         }
+
         dropZone.addEventListener('click', (e) => {
             if (e.target !== removeFileBtn && !previewContainer.contains(e.target)) fileInput.click();
         });
-        ['dragenter', 'dragover'].forEach(n => dropZone.addEventListener(n, (e) => { e.preventDefault(); dropZone.classList.add('border-violet-500', 'bg-violet-950/20'); }));
-        ['dragleave', 'drop'].forEach(n => dropZone.addEventListener(n, (e) => { e.preventDefault(); dropZone.classList.remove('border-violet-500', 'bg-violet-950/20'); }));
+        ['dragenter', 'dragover'].forEach(n => dropZone.addEventListener(n, (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500', 'bg-indigo-50/50'); }));
+        ['dragleave', 'drop'].forEach(n => dropZone.addEventListener(n, (e) => { e.preventDefault(); dropZone.classList.remove('border-indigo-500', 'bg-indigo-50/50'); }));
         dropZone.addEventListener('drop', (e) => { if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
         fileInput.addEventListener('change', (e) => { if (fileInput.files.length) handleFile(fileInput.files[0]); });
 
@@ -453,6 +463,7 @@
             uploadPrompt.classList.add('hidden');
             previewContainer.classList.remove('hidden');
         }
+
         removeFileBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             selectedFile = null;
@@ -517,31 +528,31 @@
             if (noteFakePct) noteFakePct.textContent = `${data.fake_pct}%`;
 
             // 1. Top Verdict Banner
-            verdictBanner.className = `rounded-2xl p-6 sm:p-8 glass-panel border-2 transition-all duration-300 ${isFake ? 'glow-fake border-red-500/70' : 'glow-real border-emerald-500/70'}`;
-            verdictBadge.className = `text-sm font-black uppercase tracking-wider px-3.5 py-1 rounded-full text-white shadow-md ${isFake ? 'bg-red-600' : 'bg-emerald-600'}`;
+            verdictBanner.className = `rounded-2xl p-6 sm:p-8 glass-panel border-2 transition-all duration-300 bg-white ${isFake ? 'glow-fake border-rose-300' : 'glow-real border-emerald-300'}`;
+            verdictBadge.className = `text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full text-white shadow-sm ${isFake ? 'bg-rose-600' : 'bg-emerald-600'}`;
             verdictBadge.textContent = isFake ? 'MANIPULATED (DEEPFAKE)' : 'AUTHENTIC (REAL)';
             resultVideoName.textContent = data.filename;
             verdictTitle.textContent = isFake ? 'Video Flagged as Manipulated (Deepfake)' : 'Video Verified as Authentic (Real)';
 
-            verdictPill.className = `inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold border ${isFake ? 'bg-red-500/10 text-red-400 border-red-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`;
+            verdictPill.className = `inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold border ${isFake ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`;
             verdictPillText.textContent = isFake
                 ? `Fake Probability ${data.fake_pct}% EXCEEDS Threshold ${data.threshold_pct}% → FLAGGED AS FAKE`
                 : `Fake Probability ${data.fake_pct}% is SAFELY BELOW Threshold ${data.threshold_pct}% → VERIFIED AS REAL`;
 
             verdictPrimaryLabel.textContent = isFake ? 'Synthetic Probability' : 'Authentic Confidence';
             verdictPrimaryVal.textContent = isFake ? `${data.fake_pct}%` : `${data.real_pct}%`;
-            verdictPrimaryVal.className = `text-3xl sm:text-4xl font-extrabold font-mono ${isFake ? 'text-red-400' : 'text-emerald-400'}`;
+            verdictPrimaryVal.className = `text-3xl sm:text-4xl font-extrabold font-mono ${isFake ? 'text-rose-600' : 'text-emerald-600'}`;
 
             quickRealPct.textContent = `${data.real_pct}%`;
             quickFakePct.textContent = `${data.fake_pct}%`;
-            quickFakePct.className = `text-xl sm:text-2xl font-black font-mono mt-0.5 ${isFake ? 'text-red-400' : 'text-violet-400'}`;
+            quickFakePct.className = `text-xl sm:text-2xl font-black font-mono mt-0.5 ${isFake ? 'text-rose-600' : 'text-indigo-600'}`;
             quickThreshold.textContent = `${data.threshold_pct}%`;
 
             // 2. Plain-English "Why is this video Real / Fake?" Section
-            whySection.className = `glass-panel rounded-2xl p-6 sm:p-8 border-l-4 transition-all ${isFake ? 'border-l-red-500' : 'border-l-emerald-500'}`;
+            whySection.className = `glass-panel rounded-2xl p-6 sm:p-8 border-l-4 transition-all bg-white ${isFake ? 'border-l-rose-500' : 'border-l-emerald-500'}`;
             whyIcon.textContent = isFake ? '⚠️' : '💡';
             whyTitle.textContent = isFake ? 'Why is this video classified as FAKE?' : 'Why is this video classified as REAL?';
-            whyVerdictPill.className = `self-start sm:self-auto text-xs font-mono font-bold px-3 py-1 rounded-full border ${isFake ? 'bg-red-500/15 text-red-400 border-red-500/40' : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/40'}`;
+            whyVerdictPill.className = `self-start sm:self-auto text-xs font-mono font-bold px-3 py-1 rounded-full border ${isFake ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`;
             whyVerdictPill.textContent = isFake ? 'MANIPULATION DETECTED' : 'GENUINE VIDEO VERIFIED';
 
             executiveSummaryText.textContent = data.executive_summary;
@@ -552,18 +563,18 @@
             if (reasons.length) {
                 reasons.forEach(r => {
                     const isPass = r.status === 'PASS';
-                    const col = isPass ? 'text-emerald-400' : 'text-red-400';
-                    const bg = isPass ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-red-500/10 border-red-500/30';
+                    const col = isPass ? 'text-emerald-700' : 'text-rose-700';
+                    const bg = isPass ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200';
                     const badge = isPass ? 'PASS' : 'ALERT';
 
                     const card = document.createElement('div');
-                    card.className = 'bg-gray-900/70 p-4 rounded-xl border border-gray-800/80 flex flex-col justify-between';
+                    card.className = 'bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between';
                     card.innerHTML = `
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-white">${r.title}</span>
+                            <span class="text-xs font-bold text-slate-900">${r.title}</span>
                             <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${col} ${bg}">${badge}</span>
                         </div>
-                        <p class="text-xs text-gray-300 leading-relaxed">${r.detail}</p>
+                        <p class="text-xs text-slate-600 leading-relaxed">${r.detail}</p>
                     `;
                     reasonsGrid.appendChild(card);
                 });
@@ -574,13 +585,13 @@
             primaryZoneTag.textContent = `Primary Focus: ${sal.primary_region}`;
             salBoundaryPct.textContent = `${sal.boundary_pct}%`;
             barBoundary.style.width = `${Math.min(100, sal.boundary_pct)}%`;
-            barBoundary.className = `h-2 rounded-full ${sal.boundary_pct > 32 ? 'bg-red-500' : 'bg-violet-500'}`;
+            barBoundary.className = `h-2 rounded-full ${sal.boundary_pct > 32 ? 'bg-rose-500' : 'bg-indigo-500'}`;
 
             salOcularPct.textContent = `${sal.ocular_pct}%`;
             barOcular.style.width = `${Math.min(100, sal.ocular_pct)}%`;
             salPerioralPct.textContent = `${sal.perioral_pct}%`;
             barPerioral.style.width = `${Math.min(100, sal.perioral_pct)}%`;
-            barPerioral.className = `h-2 rounded-full ${sal.perioral_pct > 35 ? 'bg-red-500' : 'bg-fuchsia-500'}`;
+            barPerioral.className = `h-2 rounded-full ${sal.perioral_pct > 35 ? 'bg-rose-500' : 'bg-amber-500'}`;
             salMidfacePct.textContent = `${sal.midface_pct}%`;
             barMidface.style.width = `${Math.min(100, sal.midface_pct)}%`;
 
@@ -602,6 +613,7 @@
             resultsSection.classList.remove('hidden');
             resultsSection.scrollIntoView({ behavior: 'smooth' });
         }
+
         resetBtn.addEventListener('click', () => {
             resultsSection.classList.add('hidden');
             uploadForm.scrollIntoView({ behavior: 'smooth' });
