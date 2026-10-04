@@ -7,76 +7,22 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root, [data-theme="cyber"] {
-            --bg-page: #070a13;
-            --bg-mesh: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 50%), radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.06) 0%, transparent 40%);
-            --bg-panel: rgba(15, 23, 42, 0.85);
-            --bg-card: rgba(17, 24, 39, 0.7);
-            --bg-subcard: rgba(10, 16, 31, 0.85);
-            --bg-input: rgba(3, 7, 18, 0.6);
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
+        :root {
+            --bg-page: #080c16;
+            --bg-mesh: radial-gradient(circle at 50% -20%, rgba(56, 189, 248, 0.09) 0%, transparent 60%), radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.06) 0%, transparent 50%);
+            --bg-panel: rgba(15, 23, 42, 0.75);
             --border-main: rgba(255, 255, 255, 0.08);
-            --header-bg: rgba(3, 7, 18, 0.85);
-            --glow-real: 0 0 30px -5px rgba(16, 185, 129, 0.3);
-            --glow-fake: 0 0 30px -5px rgba(239, 68, 68, 0.3);
-        }
-
-        [data-theme="sapphire"] {
-            --bg-page: #070d1e;
-            --bg-mesh: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.12) 0%, transparent 50%), radial-gradient(circle at 100% 100%, rgba(37, 99, 235, 0.08) 0%, transparent 40%);
-            --bg-panel: rgba(15, 29, 61, 0.88);
-            --bg-card: rgba(20, 38, 80, 0.65);
-            --bg-subcard: rgba(11, 20, 42, 0.9);
-            --bg-input: rgba(7, 15, 34, 0.75);
-            --text-primary: #f0f6fc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #93c5fd;
-            --border-main: rgba(96, 165, 250, 0.18);
-            --header-bg: rgba(7, 13, 30, 0.88);
-            --glow-real: 0 0 30px -5px rgba(16, 185, 129, 0.3);
-            --glow-fake: 0 0 30px -5px rgba(239, 68, 68, 0.3);
-        }
-
-        [data-theme="emerald"] {
-            --bg-page: #040d09;
-            --bg-mesh: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.10) 0%, transparent 50%), radial-gradient(circle at 100% 100%, rgba(5, 150, 105, 0.07) 0%, transparent 40%);
-            --bg-panel: rgba(6, 26, 18, 0.88);
-            --bg-card: rgba(9, 36, 25, 0.65);
-            --bg-subcard: rgba(3, 15, 10, 0.85);
-            --bg-input: rgba(3, 15, 10, 0.75);
-            --text-primary: #ecfdf5;
-            --text-secondary: #d1fae5;
-            --text-muted: #6ee7b7;
-            --border-main: rgba(16, 185, 129, 0.20);
-            --header-bg: rgba(4, 13, 9, 0.88);
-            --glow-real: 0 0 30px -5px rgba(16, 185, 129, 0.3);
-            --glow-fake: 0 0 30px -5px rgba(239, 68, 68, 0.3);
-        }
-
-        [data-theme="light"] {
-            --bg-page: #f8fafc;
-            --bg-mesh: radial-gradient(circle at 50% 0%, rgba(2, 132, 199, 0.06) 0%, transparent 50%), radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.04) 0%, transparent 40%);
-            --bg-panel: rgba(255, 255, 255, 0.95);
-            --bg-card: rgba(248, 250, 252, 0.95);
-            --bg-subcard: rgba(241, 245, 249, 0.95);
-            --bg-input: rgba(241, 245, 249, 0.9);
-            --text-primary: #0f172a;
-            --text-secondary: #334155;
-            --text-muted: #64748b;
-            --border-main: rgba(203, 213, 225, 0.85);
-            --header-bg: rgba(255, 255, 255, 0.95);
-            --glow-real: 0 0 25px -5px rgba(16, 185, 129, 0.25);
-            --glow-fake: 0 0 25px -5px rgba(239, 68, 68, 0.25);
+            --header-bg: rgba(8, 12, 22, 0.85);
+            --glow-real: 0 0 30px -5px rgba(16, 185, 129, 0.25);
+            --glow-fake: 0 0 30px -5px rgba(239, 68, 68, 0.25);
         }
 
         body {
             background-color: var(--bg-page);
             background-image: var(--bg-mesh);
-            color: var(--text-primary);
+            color: #f8fafc;
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            transition: background-color 0.25s ease, color 0.25s ease;
+            -webkit-font-smoothing: antialiased;
         }
 
         header, footer {
@@ -86,61 +32,14 @@
 
         .glass-panel {
             background: var(--bg-panel) !important;
-            backdrop-filter: blur(14px);
-            border-color: var(--border-main) !important;
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.20);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-main) !important;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.35);
         }
 
-        /* Light mode comprehensive contrast overrides */
-        [data-theme="light"] .text-white { color: #0f172a !important; }
-        [data-theme="light"] .text-gray-200 { color: #1e293b !important; }
-        [data-theme="light"] .text-gray-300 { color: #334155 !important; }
-        [data-theme="light"] .text-gray-400 { color: #475569 !important; }
-        [data-theme="light"] .text-gray-500 { color: #64748b !important; }
-        [data-theme="light"] .bg-gray-950,
-        [data-theme="light"] .bg-gray-950\/40,
-        [data-theme="light"] .bg-gray-950\/60 { background-color: rgba(241, 245, 249, 0.9) !important; }
-        [data-theme="light"] .bg-gray-900,
-        [data-theme="light"] .bg-gray-900\/50,
-        [data-theme="light"] .bg-gray-900\/60,
-        [data-theme="light"] .bg-gray-900\/70,
-        [data-theme="light"] .bg-gray-900\/80 { background-color: rgba(248, 250, 252, 0.95) !important; }
-        [data-theme="light"] .border-gray-800,
-        [data-theme="light"] .border-gray-800\/60,
-        [data-theme="light"] .border-gray-800\/80,
-        [data-theme="light"] .border-gray-700 { border-color: rgba(203, 213, 225, 0.85) !important; }
-
-        /* Sapphire Navy theme card adjustments */
-        [data-theme="sapphire"] .bg-gray-900,
-        [data-theme="sapphire"] .bg-gray-900\/50,
-        [data-theme="sapphire"] .bg-gray-900\/60,
-        [data-theme="sapphire"] .bg-gray-900\/70,
-        [data-theme="sapphire"] .bg-gray-900\/80 { background-color: rgba(16, 31, 64, 0.75) !important; }
-        [data-theme="sapphire"] .bg-gray-950,
-        [data-theme="sapphire"] .bg-gray-950\/40,
-        [data-theme="sapphire"] .bg-gray-950\/60 { background-color: rgba(10, 20, 44, 0.85) !important; }
-        [data-theme="sapphire"] .border-gray-800,
-        [data-theme="sapphire"] .border-gray-800\/60,
-        [data-theme="sapphire"] .border-gray-800\/80,
-        [data-theme="sapphire"] .border-gray-700 { border-color: rgba(59, 130, 246, 0.22) !important; }
-
-        /* Emerald Terminal theme card adjustments */
-        [data-theme="emerald"] .bg-gray-900,
-        [data-theme="emerald"] .bg-gray-900\/50,
-        [data-theme="emerald"] .bg-gray-900\/60,
-        [data-theme="emerald"] .bg-gray-900\/70,
-        [data-theme="emerald"] .bg-gray-900\/80 { background-color: rgba(7, 28, 19, 0.75) !important; }
-        [data-theme="emerald"] .bg-gray-950,
-        [data-theme="emerald"] .bg-gray-950\/40,
-        [data-theme="emerald"] .bg-gray-950\/60 { background-color: rgba(4, 16, 11, 0.85) !important; }
-        [data-theme="emerald"] .border-gray-800,
-        [data-theme="emerald"] .border-gray-800\/60,
-        [data-theme="emerald"] .border-gray-800\/80,
-        [data-theme="emerald"] .border-gray-700 { border-color: rgba(16, 185, 129, 0.22) !important; }
-
-        .glow-real { box-shadow: var(--glow-real); border-color: rgba(16, 185, 129, 0.6) !important; }
-        .glow-fake { box-shadow: var(--glow-fake); border-color: rgba(239, 68, 68, 0.6) !important; }
-        .theme-btn.active-theme { background: rgba(56, 189, 248, 0.18); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.45); }
+        .glow-real { box-shadow: var(--glow-real); border-color: rgba(16, 185, 129, 0.5) !important; }
+        .glow-fake { box-shadow: var(--glow-fake); border-color: rgba(239, 68, 68, 0.5) !important; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
@@ -152,31 +51,14 @@
                 </div>
                 <div class="flex items-center space-x-2">
                     <span class="text-base sm:text-lg font-bold tracking-tight text-white">Deepfake Detection Framework</span>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 font-mono">XAI</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 font-mono font-semibold">XAI</span>
                 </div>
             </div>
-            <div class="flex items-center space-x-3">
-                <!-- Theme Switcher -->
-                <div class="flex items-center space-x-1 p-1 rounded-xl bg-gray-900/80 border border-gray-800" id="themeSwitcher">
-                    <button type="button" data-theme-val="cyber" class="theme-btn px-2.5 py-1 rounded-lg text-xs font-medium flex items-center space-x-1 transition active-theme" title="Cyber Obsidian (Deep Dark)">
-                        <span>🌌</span>
-                        <span class="hidden md:inline">Cyber</span>
-                    </button>
-                    <button type="button" data-theme-val="sapphire" class="theme-btn px-2.5 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-sky-300 flex items-center space-x-1 transition" title="Deep Sapphire (Navy Blue)">
-                        <span>🌊</span>
-                        <span class="hidden md:inline">Sapphire</span>
-                    </button>
-                    <button type="button" data-theme-val="emerald" class="theme-btn px-2.5 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-emerald-300 flex items-center space-x-1 transition" title="Emerald Matrix (Terminal Green)">
-                        <span>⚡</span>
-                        <span class="hidden md:inline">Emerald</span>
-                    </button>
-                    <button type="button" data-theme-val="light" class="theme-btn px-2.5 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-amber-500 flex items-center space-x-1 transition" title="Studio Lab (Light Mode)">
-                        <span>☀️</span>
-                        <span class="hidden md:inline">Light</span>
-                    </button>
-                </div>
-
-                <a href="/docs" target="_blank" class="text-xs text-gray-400 hover:text-sky-400 transition font-mono hidden sm:inline">Docs &rarr;</a>
+            <div class="flex items-center space-x-4">
+                <a href="/docs" target="_blank" class="text-xs text-gray-400 hover:text-sky-400 transition font-mono flex items-center space-x-1">
+                    <span>API Docs</span>
+                    <span>&rarr;</span>
+                </a>
             </div>
         </div>
     </header>
@@ -724,29 +606,6 @@
             resultsSection.classList.add('hidden');
             uploadForm.scrollIntoView({ behavior: 'smooth' });
         });
-
-        // Theme Switcher Logic
-        const themeButtons = document.querySelectorAll('.theme-btn');
-        function applyTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            try {
-                localStorage.setItem('deepforensics_theme', theme);
-            } catch (e) {}
-            themeButtons.forEach(btn => {
-                if (btn.getAttribute('data-theme-val') === theme) {
-                    btn.classList.add('active-theme', 'bg-sky-500/20', 'text-sky-300', 'border-sky-500/40');
-                    btn.classList.remove('text-gray-400');
-                } else {
-                    btn.classList.remove('active-theme', 'bg-sky-500/20', 'text-sky-300', 'border-sky-500/40');
-                    btn.classList.add('text-gray-400');
-                }
-            });
-        }
-        themeButtons.forEach(btn => {
-            btn.addEventListener('click', () => applyTheme(btn.getAttribute('data-theme-val')));
-        });
-        const savedTheme = localStorage.getItem('deepforensics_theme') || 'cyber';
-        applyTheme(savedTheme);
     </script>
 </body>
 </html>
