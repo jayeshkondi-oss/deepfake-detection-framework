@@ -127,7 +127,7 @@ def save_temporal_timeline_plot(
 
     fig, ax = plt.subplots(figsize=(8, 3))
     ax.bar(times, probs, width=bar_width, color=colors)
-    ax.axhline(threshold, color="#38bdf8", linestyle="--", linewidth=1.5, label=f"Threshold ({int(threshold*100)}%)")
+    ax.axhline(threshold, color="#a855f7", linestyle="--", linewidth=1.5, label=f"Threshold ({int(threshold*100)}%)")
     ax.set_xlabel(
         "Time (seconds)" if times_seconds is not None else "Frame index"
     )

@@ -8,11 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-page: #090714;
-            --bg-mesh: radial-gradient(circle at 50% -20%, rgba(139, 92, 246, 0.12) 0%, transparent 60%), radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.07) 0%, transparent 50%);
-            --bg-panel: rgba(18, 14, 30, 0.80);
+            --bg-page: #080c16;
+            --bg-mesh: radial-gradient(circle at 50% -20%, rgba(139, 92, 246, 0.10) 0%, transparent 60%), radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.06) 0%, transparent 50%);
+            --bg-panel: rgba(15, 23, 42, 0.75);
             --border-main: rgba(255, 255, 255, 0.08);
-            --header-bg: rgba(9, 7, 20, 0.85);
+            --header-bg: rgba(8, 12, 22, 0.85);
             --glow-real: 0 0 30px -5px rgba(16, 185, 129, 0.25);
             --glow-fake: 0 0 30px -5px rgba(239, 68, 68, 0.25);
         }
@@ -35,7 +35,7 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-main) !important;
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.40);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.35);
         }
 
         .glow-real { box-shadow: var(--glow-real); border-color: rgba(16, 185, 129, 0.5) !important; }
@@ -46,12 +46,12 @@
     <header class="border-b border-gray-800/80 bg-gray-950/60 backdrop-blur sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
                 </div>
                 <div class="flex items-center space-x-2">
                     <span class="text-base sm:text-lg font-bold tracking-tight text-white">Deepfake Detection Framework</span>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-300 border border-violet-500/30 font-mono font-semibold">XAI</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20 font-mono font-semibold">XAI</span>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -111,7 +111,7 @@
                             <span>High Precision (90%)</span>
                         </div>
                     </div>
-                    <button type="submit" id="analyzeBtn" class="w-full py-3.5 px-6 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-purple-500 shadow-lg shadow-violet-500/25 transition duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button type="submit" id="analyzeBtn" class="w-full py-3.5 px-6 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-violet-600 via-purple-600 to-violet-600 hover:from-violet-500 hover:to-purple-500 shadow-lg shadow-violet-500/25 transition duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         <span>Analyze Video</span>
                     </button>
@@ -176,9 +176,9 @@
                             </span>
                             <p class="text-[11px] text-gray-400">Drag to test how this video is categorized at different decision sensitivity levels.</p>
                         </div>
-                        <span id="liveThresholdDisplay" class="text-xs font-mono font-bold text-violet-300 bg-violet-500/10 px-2.5 py-1 rounded border border-violet-500/30">Threshold: 65%</span>
+                        <span id="liveThresholdDisplay" class="text-xs font-mono font-bold text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded border border-purple-500/30">Threshold: 65%</span>
                     </div>
-                    <input type="range" id="liveThresholdSlider" min="0.05" max="0.95" step="0.05" value="0.65" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-violet-500">
+                    <input type="range" id="liveThresholdSlider" min="0.05" max="0.95" step="0.05" value="0.65" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500">
                     <div class="flex justify-between text-[10px] text-gray-500 font-mono mt-1">
                         <span>Strict (5%)</span>
                         <span>Strict (30%)</span>
@@ -269,7 +269,7 @@
                             </h4>
                             <p class="text-xs text-gray-400 mt-0.5">Quantifies attention distributed across facial regions (balanced distribution indicates genuine video).</p>
                         </div>
-                        <span id="primaryZoneTag" class="mt-2 sm:mt-0 text-xs font-mono font-semibold text-violet-300 bg-violet-500/10 px-3 py-1 rounded-full border border-violet-500/30">Primary Focus: Balanced Landmarks</span>
+                        <span id="primaryZoneTag" class="mt-2 sm:mt-0 text-xs font-mono font-semibold text-violet-400 bg-violet-500/10 px-3 py-1 rounded-full border border-violet-500/20">Primary Focus: Balanced Landmarks</span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -302,7 +302,7 @@
                                 <span class="text-gray-300 font-semibold">Cheeks & Nose</span>
                                 <span id="salMidfacePct" class="font-mono text-violet-400 font-bold">29.2%</span>
                             </div>
-                            <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barMidface" class="bg-indigo-500 h-2 rounded-full" style="width: 29%"></div></div>
+                            <div class="w-full bg-gray-800 rounded-full h-2 mb-2 overflow-hidden"><div id="barMidface" class="bg-emerald-500 h-2 rounded-full" style="width: 29%"></div></div>
                             <p class="text-[11px] text-gray-500">Natural skin pores and lighting reflectance</p>
                         </div>
                     </div>
