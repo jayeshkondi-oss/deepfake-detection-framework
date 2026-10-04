@@ -246,6 +246,7 @@ class DeepfakePredictor:
                             per_frame_probs.tolist(),
                             temporal_result.get("times_seconds"),
                             save_dir / "temporal_timeline.png",
+                            threshold=self.fake_threshold,
                         )
                     ),
                 }

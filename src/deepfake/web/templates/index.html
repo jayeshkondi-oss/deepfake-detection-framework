@@ -142,6 +142,35 @@
                         <div id="quickThreshold" class="text-xl sm:text-2xl font-black text-indigo-400 font-mono mt-0.5">65.0%</div>
                     </div>
                 </div>
+
+                <!-- Live Interactive Threshold Adjuster -->
+                <div class="mt-6 pt-5 border-t border-gray-800/80 bg-gray-950/40 p-4 rounded-xl border border-gray-800/60">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                        <div>
+                            <span class="text-xs font-bold text-white flex items-center space-x-1.5">
+                                <span>🎚️</span>
+                                <span>Test Different Cutoff Thresholds (Instant Live Update)</span>
+                            </span>
+                            <p class="text-[11px] text-gray-400">Drag to test how this video is categorized at different decision sensitivity levels.</p>
+                        </div>
+                        <span id="liveThresholdDisplay" class="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded border border-indigo-500/30">Threshold: 65%</span>
+                    </div>
+                    <input type="range" id="liveThresholdSlider" min="0.05" max="0.95" step="0.05" value="0.65" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                    <div class="flex justify-between text-[10px] text-gray-500 font-mono mt-1">
+                        <span>Strict (5%)</span>
+                        <span>Strict (30%)</span>
+                        <span>Standard (50%)</span>
+                        <span>Unseen (65%)</span>
+                        <span>High Precision (90%)</span>
+                    </div>
+                    <div class="mt-3 text-[11px] text-gray-300 bg-gray-900/80 p-3 rounded-lg border border-gray-800 flex items-start space-x-2.5">
+                        <span class="text-sky-400 font-bold text-sm leading-none mt-0.5">💡</span>
+                        <div class="leading-relaxed">
+                            <strong>Why does the video's measured score (<span id="noteFakePct" class="font-mono text-sky-400 font-bold">12.4%</span>) stay the same?</strong><br>
+                            The percentage measures the video's physical pixels & audio—it doesn't change when you move the threshold. The <strong>Threshold</strong> is the decision cutoff: if the video's Fake Score &ge; Threshold, it is declared <span class="text-red-400 font-bold">FAKE</span>; otherwise <span class="text-emerald-400 font-bold">REAL</span>.
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- 2. WHY IS THIS VIDEO REAL / FAKE? (PLAIN-ENGLISH EXPLANATION) -->
@@ -318,6 +347,9 @@
         const quickRealPct = document.getElementById('quickRealPct');
         const quickFakePct = document.getElementById('quickFakePct');
         const quickThreshold = document.getElementById('quickThreshold');
+        const liveThresholdSlider = document.getElementById('liveThresholdSlider');
+        const liveThresholdDisplay = document.getElementById('liveThresholdDisplay');
+        const noteFakePct = document.getElementById('noteFakePct');
         const whySection = document.getElementById('whySection');
         const whyIcon = document.getElementById('whyIcon');
         const whyTitle = document.getElementById('whyTitle');
@@ -340,10 +372,48 @@
         const downloadReportBtn = document.getElementById('downloadReportBtn');
         const resetBtn = document.getElementById('resetBtn');
         let selectedFile = null;
+        let currentResultData = null;
 
         thresholdSlider.addEventListener('input', (e) => {
             thresholdVal.textContent = Math.round(e.target.value * 100) + '%';
+            if (liveThresholdSlider) liveThresholdSlider.value = e.target.value;
+            if (currentResultData) updateVerdictForThreshold(parseFloat(e.target.value));
         });
+
+        if (liveThresholdSlider) {
+            liveThresholdSlider.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                thresholdSlider.value = val;
+                thresholdVal.textContent = Math.round(val * 100) + '%';
+                updateVerdictForThreshold(val);
+            });
+        }
+
+        function updateVerdictForThreshold(newThresh) {
+            if (!currentResultData) return;
+            const threshPct = Math.round(newThresh * 100 * 10) / 10;
+            const fakePct = currentResultData.fake_pct;
+            const isFake = fakePct >= threshPct;
+
+            if (liveThresholdDisplay) liveThresholdDisplay.textContent = `Threshold: ${Math.round(newThresh * 100)}%`;
+            quickThreshold.textContent = `${threshPct}%`;
+
+            verdictBanner.className = `rounded-2xl p-6 sm:p-8 glass-panel border-2 transition-all duration-300 ${isFake ? 'glow-fake border-red-500/70' : 'glow-real border-emerald-500/70'}`;
+            verdictBadge.className = `text-sm font-black uppercase tracking-wider px-3.5 py-1 rounded-full text-white shadow-md ${isFake ? 'bg-red-600' : 'bg-emerald-600'}`;
+            verdictBadge.textContent = isFake ? 'MANIPULATED (DEEPFAKE)' : 'AUTHENTIC (REAL)';
+            verdictTitle.textContent = isFake ? 'Video Flagged as Manipulated (Deepfake)' : 'Video Verified as Authentic (Real)';
+
+            verdictPill.className = `inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold border ${isFake ? 'bg-red-500/10 text-red-400 border-red-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`;
+            verdictPillText.textContent = isFake
+                ? `Fake Probability ${fakePct}% EXCEEDS Threshold ${threshPct}% → FLAGGED AS FAKE`
+                : `Fake Probability ${fakePct}% is SAFELY BELOW Threshold ${threshPct}% → VERIFIED AS REAL`;
+
+            whySection.className = `glass-panel rounded-2xl p-6 sm:p-8 border-l-4 transition-all ${isFake ? 'border-l-red-500' : 'border-l-emerald-500'}`;
+            whyIcon.textContent = isFake ? '⚠️' : '💡';
+            whyTitle.textContent = isFake ? 'Why is this video classified as FAKE?' : 'Why is this video classified as REAL?';
+            whyVerdictPill.className = `self-start sm:self-auto text-xs font-mono font-bold px-3 py-1 rounded-full border ${isFake ? 'bg-red-500/15 text-red-400 border-red-500/40' : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/40'}`;
+            whyVerdictPill.textContent = isFake ? 'MANIPULATION DETECTED' : 'GENUINE VIDEO VERIFIED';
+        }
         dropZone.addEventListener('click', (e) => {
             if (e.target !== removeFileBtn && !previewContainer.contains(e.target)) fileInput.click();
         });
@@ -416,7 +486,12 @@
         });
 
         function renderResults(data) {
+            currentResultData = data;
             const isFake = data.is_fake;
+
+            if (liveThresholdSlider) liveThresholdSlider.value = data.threshold;
+            if (liveThresholdDisplay) liveThresholdDisplay.textContent = `Threshold: ${Math.round(data.threshold * 100)}%`;
+            if (noteFakePct) noteFakePct.textContent = `${data.fake_pct}%`;
 
             // 1. Top Verdict Banner
             verdictBanner.className = `rounded-2xl p-6 sm:p-8 glass-panel border-2 transition-all duration-300 ${isFake ? 'glow-fake border-red-500/70' : 'glow-real border-emerald-500/70'}`;

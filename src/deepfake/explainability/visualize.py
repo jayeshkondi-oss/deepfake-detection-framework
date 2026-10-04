@@ -108,6 +108,7 @@ def save_temporal_timeline_plot(
     fake_probability_per_frame,
     times_seconds,
     output_path: str | Path,
+    threshold: float = 0.5,
 ) -> Path:
     """Bar chart of per-frame fake probability -- the 'when is it
     fake' timeline."""
@@ -121,18 +122,19 @@ def save_temporal_timeline_plot(
         else np.arange(len(probs))
     )
 
-    colors = ["#d1495b" if p >= 0.5 else "#2e8b57" for p in probs]
+    colors = ["#ef4444" if p >= threshold else "#10b981" for p in probs]
     bar_width = (times[1] - times[0]) * 0.8 if len(times) > 1 else 0.5
 
     fig, ax = plt.subplots(figsize=(8, 3))
     ax.bar(times, probs, width=bar_width, color=colors)
-    ax.axhline(0.5, color="gray", linestyle="--", linewidth=1)
+    ax.axhline(threshold, color="#38bdf8", linestyle="--", linewidth=1.5, label=f"Threshold ({int(threshold*100)}%)")
     ax.set_xlabel(
         "Time (seconds)" if times_seconds is not None else "Frame index"
     )
     ax.set_ylabel("Fake probability")
-    ax.set_title("Per-frame fake-probability timeline")
+    ax.set_title(f"Per-frame fake-probability timeline (Threshold: {int(threshold*100)}%)")
     ax.set_ylim(0, 1.05)
+    ax.legend(loc="upper right", fontsize=8)
     fig.tight_layout()
     fig.savefig(output_path, dpi=150)
     plt.close(fig)
