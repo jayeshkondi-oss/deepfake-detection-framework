@@ -27,6 +27,7 @@ class DeepfakeReport:
     most_suspicious_frame_index: int | None = None
     visualization_paths: dict | None = None
     forensic_data: Optional[ForensicReportData] = None
+    face_boxes: list | None = None
 
     def summary(self) -> str:
         """A detailed, human-readable forensic XAI explanation report."""
@@ -325,6 +326,7 @@ def build_report(
     audio_importance_available: bool = False,
     threshold: float = 0.5,
     forensic_data: Optional[ForensicReportData] = None,
+    face_boxes: list | None = None,
 ) -> DeepfakeReport:
     """
     Args:
@@ -337,6 +339,7 @@ def build_report(
         audio_importance_available: whether audio XAI was computed.
         threshold: confidence threshold for FAKE verdict (default 0.5).
         forensic_data: optional ForensicReportData with anatomical and frequency diagnostics.
+        face_boxes: optional list of normalized bounding boxes for detected face regions.
 
     Returns:
         A DeepfakeReport.
@@ -364,6 +367,7 @@ def build_report(
         threshold=float(threshold),
         most_suspicious_frame_index=most_suspicious_index,
         forensic_data=forensic_data,
+        face_boxes=face_boxes,
     )
 
 

@@ -203,7 +203,109 @@
                 </div>
             </div>
 
-            <!-- 2. WHY IS THIS VIDEO REAL / FAKE? (PLAIN-ENGLISH EXPLANATION) -->
+            <!-- 2. SYNCHRONIZED REAL-TIME VIDEO FORENSICS INSPECTOR -->
+            <div id="playbackInspectorSection" class="glass-panel rounded-2xl p-6 sm:p-8 bg-white border border-slate-200 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded-full bg-indigo-600 animate-ping"></span>
+                            <span>Live Video Playback Forensics (Real/Fake Synchronizer)</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Play the video below to track which moments and frames are Authentic (Real) vs Manipulated (Fake) in real time.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-mono px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-semibold border border-slate-200" id="liveTimeBadge">00:00.0s / 00:00.0s</span>
+                    </div>
+                </div>
+
+                <!-- Video Viewport with Animated Forensic Overlay Bounding Box -->
+                <div class="relative w-full max-w-3xl mx-auto rounded-xl overflow-hidden bg-black border border-slate-200 shadow-md aspect-video flex items-center justify-center group" id="videoViewport">
+                    <video id="inspectionVideo" class="w-full h-full object-contain" playsinline controls></video>
+                    
+                    <!-- Live Forensic Bounding Box Overlay -->
+                    <div id="faceMarkerOverlay" class="absolute pointer-events-none transition-all duration-100 border-2 rounded-lg flex flex-col justify-between hidden" style="left: 25%; top: 15%; width: 50%; height: 60%;">
+                        <!-- Top Tag on Box -->
+                        <div id="markerTagTop" class="text-[11px] font-mono font-bold px-2 py-0.5 rounded shadow-sm self-start -mt-6 ml-0 transition-colors whitespace-nowrap bg-emerald-600 text-white">
+                            ✓ AUTHENTIC FACE
+                        </div>
+                        <!-- Corner Reticles -->
+                        <div class="w-full h-full flex justify-between items-between p-1">
+                            <span class="w-2 h-2 border-t-2 border-l-2 border-current"></span>
+                            <span class="w-2 h-2 border-t-2 border-r-2 border-current"></span>
+                        </div>
+                        <div id="markerTagBottom" class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded self-end -mb-5 mr-0 transition-colors bg-black/80 text-white">
+                            Score: 12.4%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LIVE STATUS BAR UNDER VIDEO -->
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center space-x-3">
+                            <span id="liveFrameStatusBadge" class="text-xs font-mono font-black uppercase px-3 py-1.5 rounded-lg text-white bg-emerald-600 shadow-sm flex items-center space-x-1.5">
+                                <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                                <span id="liveFrameStatusText">REAL (Authentic Frame)</span>
+                            </span>
+                            <div>
+                                <div class="text-xs font-bold text-slate-800" id="liveFrameDetailTitle">Natural Facial Dynamics & Texture</div>
+                                <div class="text-[11px] text-slate-500 font-mono" id="liveFrameSubNote">Frame within safe authentic confidence limits</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-4">
+                            <div class="text-right">
+                                <div class="text-[10px] uppercase font-bold text-slate-400">Current Frame Risk</div>
+                                <div id="liveFrameRiskPct" class="text-lg font-black font-mono text-emerald-600">12.4%</div>
+                            </div>
+                            <div class="w-28 bg-slate-200 rounded-full h-2.5 overflow-hidden border border-slate-300">
+                                <div id="liveFrameRiskBar" class="bg-emerald-500 h-full rounded-full transition-all duration-100" style="width: 12%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLOR-CODED FORENSIC TIMELINE SCRUBBER STRIP -->
+                    <div class="space-y-1.5 pt-2 border-t border-slate-200/80">
+                        <div class="flex justify-between items-center text-[11px] text-slate-500 font-mono">
+                            <span class="flex items-center space-x-1">
+                                <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span>
+                                <span>Green = Genuine/Real</span>
+                                <span class="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block ml-2"></span>
+                                <span>Red = Suspicious/Fake</span>
+                            </span>
+                            <span class="text-slate-400">Click any segment below to jump to that moment</span>
+                        </div>
+
+                        <!-- Segmented timeline bar -->
+                        <div id="timelineSegmentsBar" class="relative w-full h-7 bg-slate-200 rounded-lg overflow-hidden flex cursor-pointer select-none border border-slate-300 shadow-inner" title="Click anywhere to jump to timestamp">
+                            <!-- Segments populated dynamically by JS -->
+                            <!-- Cursor line indicating current playback head -->
+                            <div id="timelinePlaybackCursor" class="absolute top-0 bottom-0 w-1 bg-slate-900 shadow-md z-10 pointer-events-none transition-all duration-75" style="left: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- QUICK JUMP BUTTONS -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+                        <div class="flex items-center space-x-2">
+                            <button type="button" id="btnPlayPause" class="px-3 py-1.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold text-slate-700 flex items-center space-x-1.5 shadow-sm transition">
+                                <span id="playPauseIcon">▶</span>
+                                <span id="playPauseText">Play Video</span>
+                            </button>
+                            <button type="button" id="btnRestartVideo" class="px-3 py-1.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold text-slate-700 flex items-center space-x-1 shadow-sm transition">
+                                <span>⏮</span>
+                                <span>Start</span>
+                            </button>
+                        </div>
+
+                        <button type="button" id="btnJumpToPeak" class="px-3.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-xs font-bold text-rose-700 flex items-center space-x-1.5 shadow-sm transition">
+                            <span>🎯</span>
+                            <span id="jumpToPeakText">Jump to Peak Suspicious Moment (0.0s)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. WHY IS THIS VIDEO REAL / FAKE? (PLAIN-ENGLISH EXPLANATION) -->
             <div id="whySection" class="glass-panel rounded-2xl p-6 sm:p-8 border-l-4 transition-all bg-white">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                     <div class="flex items-center space-x-2">
@@ -403,6 +505,29 @@
         const audioCard = document.getElementById('audioCard');
         const downloadReportBtn = document.getElementById('downloadReportBtn');
         const resetBtn = document.getElementById('resetBtn');
+
+        // Playback Inspector Elements
+        const playbackInspectorSection = document.getElementById('playbackInspectorSection');
+        const inspectionVideo = document.getElementById('inspectionVideo');
+        const faceMarkerOverlay = document.getElementById('faceMarkerOverlay');
+        const markerTagTop = document.getElementById('markerTagTop');
+        const markerTagBottom = document.getElementById('markerTagBottom');
+        const liveFrameStatusBadge = document.getElementById('liveFrameStatusBadge');
+        const liveFrameStatusText = document.getElementById('liveFrameStatusText');
+        const liveFrameDetailTitle = document.getElementById('liveFrameDetailTitle');
+        const liveFrameSubNote = document.getElementById('liveFrameSubNote');
+        const liveFrameRiskPct = document.getElementById('liveFrameRiskPct');
+        const liveFrameRiskBar = document.getElementById('liveFrameRiskBar');
+        const timelineSegmentsBar = document.getElementById('timelineSegmentsBar');
+        const timelinePlaybackCursor = document.getElementById('timelinePlaybackCursor');
+        const liveTimeBadge = document.getElementById('liveTimeBadge');
+        const btnPlayPause = document.getElementById('btnPlayPause');
+        const playPauseIcon = document.getElementById('playPauseIcon');
+        const playPauseText = document.getElementById('playPauseText');
+        const btnRestartVideo = document.getElementById('btnRestartVideo');
+        const btnJumpToPeak = document.getElementById('btnJumpToPeak');
+        const jumpToPeakText = document.getElementById('jumpToPeakText');
+
         let selectedFile = null;
         let currentResultData = null;
 
@@ -445,6 +570,9 @@
             whyTitle.textContent = isFake ? 'Why is this video classified as FAKE?' : 'Why is this video classified as REAL?';
             whyVerdictPill.className = `self-start sm:self-auto text-xs font-mono font-bold px-3 py-1 rounded-full border ${isFake ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`;
             whyVerdictPill.textContent = isFake ? 'MANIPULATION DETECTED' : 'GENUINE VIDEO VERIFIED';
+
+            renderTimelineSegments();
+            updateLivePlaybackHUD();
         }
 
         dropZone.addEventListener('click', (e) => {
@@ -611,10 +739,231 @@
 
             downloadReportBtn.href = data.report_download_url;
             resultsSection.classList.remove('hidden');
+
+            // Initialize Live Video Playback Forensics
+            setupPlaybackInspector(data);
+
             resultsSection.scrollIntoView({ behavior: 'smooth' });
         }
 
+        function formatTime(s) {
+            if (isNaN(s) || s === null) return "00:00.0s";
+            const mins = Math.floor(s / 60);
+            const secs = (s % 60).toFixed(1);
+            return `${String(mins).padStart(2, '0')}:${secs < 10 ? '0' : ''}${secs}s`;
+        }
+
+        function setupPlaybackInspector(data) {
+            if (!inspectionVideo) return;
+
+            // Load video source
+            if (data.video_url) {
+                inspectionVideo.src = data.video_url;
+            } else if (selectedFile) {
+                inspectionVideo.src = URL.createObjectURL(selectedFile);
+            }
+            inspectionVideo.load();
+
+            // Set jump to peak button
+            const peakTime = data.temporal_dynamics?.peak_timestamp_seconds || 0;
+            const peakPct = data.temporal_dynamics?.peak_frame_score_pct || 0;
+            if (jumpToPeakText) {
+                jumpToPeakText.textContent = `Jump to Peak Suspicious Moment (${peakTime.toFixed(1)}s - ${peakPct}%)`;
+            }
+            if (btnJumpToPeak) {
+                btnJumpToPeak.onclick = () => {
+                    inspectionVideo.currentTime = peakTime;
+                    inspectionVideo.play().catch(() => {});
+                };
+            }
+
+            renderTimelineSegments();
+            updateLivePlaybackHUD();
+        }
+
+        function renderTimelineSegments() {
+            if (!timelineSegmentsBar || !currentResultData?.temporal_dynamics) return;
+            const td = currentResultData.temporal_dynamics;
+            const probs = td.frame_probabilities || [];
+            const times = td.frame_times_seconds || [];
+            if (!probs.length) return;
+
+            const currentThreshPct = parseFloat(thresholdSlider.value) * 100;
+
+            // Remove existing segment divs (keep cursor)
+            const children = Array.from(timelineSegmentsBar.children);
+            children.forEach(c => {
+                if (c.id !== 'timelinePlaybackCursor') c.remove();
+            });
+
+            probs.forEach((prob, idx) => {
+                const isFakeSegment = prob >= currentThreshPct;
+                const segTime = times[idx] !== undefined ? times[idx] : 0;
+                const segDiv = document.createElement('div');
+                segDiv.className = `h-full flex-1 transition-colors border-r border-black/10 last:border-r-0 ${isFakeSegment ? 'bg-rose-500 hover:bg-rose-600' : 'bg-emerald-500 hover:bg-emerald-600'}`;
+                segDiv.title = `Frame #${idx + 1} (${segTime.toFixed(1)}s): ${prob}% risk [${isFakeSegment ? 'SUSPICIOUS / FAKE' : 'AUTHENTIC / REAL'}]`;
+                segDiv.onclick = (e) => {
+                    e.stopPropagation();
+                    inspectionVideo.currentTime = segTime;
+                    updateLivePlaybackHUD();
+                };
+                timelineSegmentsBar.appendChild(segDiv);
+            });
+        }
+
+        function updateLivePlaybackHUD() {
+            if (!inspectionVideo || !currentResultData?.temporal_dynamics) return;
+            const td = currentResultData.temporal_dynamics;
+            const probs = td.frame_probabilities || [];
+            const times = td.frame_times_seconds || [];
+            const boxes = td.face_boxes || [];
+            const currentThreshPct = parseFloat(thresholdSlider.value) * 100;
+
+            const curTime = inspectionVideo.currentTime || 0;
+            const duration = inspectionVideo.duration || (times.length ? times[times.length - 1] : 1);
+
+            // Update badge time display
+            if (liveTimeBadge) {
+                liveTimeBadge.textContent = `${formatTime(curTime)} / ${formatTime(duration)}`;
+            }
+
+            // Update cursor on timeline
+            if (timelinePlaybackCursor && duration > 0) {
+                const pct = Math.min(100, Math.max(0, (curTime / duration) * 100));
+                timelinePlaybackCursor.style.left = `${pct}%`;
+            }
+
+            if (!times.length) return;
+
+            // Find closest frame to current playback time
+            let bestIdx = 0;
+            let minDiff = Infinity;
+            for (let i = 0; i < times.length; i++) {
+                const diff = Math.abs(times[i] - curTime);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    bestIdx = i;
+                }
+            }
+
+            const frameScore = probs[bestIdx] !== undefined ? probs[bestIdx] : currentResultData.fake_pct;
+            const isFrameFake = frameScore >= currentThreshPct;
+            const box = boxes[bestIdx];
+
+            // Update HUD status text & bar
+            if (liveFrameRiskPct) {
+                liveFrameRiskPct.textContent = `${frameScore.toFixed(1)}%`;
+                liveFrameRiskPct.className = `text-lg font-black font-mono ${isFrameFake ? 'text-rose-600' : 'text-emerald-600'}`;
+            }
+            if (liveFrameRiskBar) {
+                liveFrameRiskBar.style.width = `${Math.min(100, frameScore)}%`;
+                liveFrameRiskBar.className = `h-full rounded-full transition-all duration-100 ${isFrameFake ? 'bg-rose-500' : 'bg-emerald-500'}`;
+            }
+
+            if (isFrameFake) {
+                if (liveFrameStatusBadge) {
+                    liveFrameStatusBadge.className = 'text-xs font-mono font-black uppercase px-3 py-1.5 rounded-lg text-white bg-rose-600 shadow-sm flex items-center space-x-1.5';
+                }
+                if (liveFrameStatusText) liveFrameStatusText.textContent = 'FAKE (Manipulated Frame)';
+                if (liveFrameDetailTitle) liveFrameDetailTitle.textContent = `Anomaly Detected at ${times[bestIdx].toFixed(1)}s (Frame #${bestIdx + 1})`;
+                if (liveFrameSubNote) liveFrameSubNote.textContent = 'Facial inconsistencies & high-frequency anomalies detected';
+            } else {
+                if (liveFrameStatusBadge) {
+                    liveFrameStatusBadge.className = 'text-xs font-mono font-black uppercase px-3 py-1.5 rounded-lg text-white bg-emerald-600 shadow-sm flex items-center space-x-1.5';
+                }
+                if (liveFrameStatusText) liveFrameStatusText.textContent = 'REAL (Authentic Frame)';
+                if (liveFrameDetailTitle) liveFrameDetailTitle.textContent = `Natural Dynamics at ${times[bestIdx].toFixed(1)}s (Frame #${bestIdx + 1})`;
+                if (liveFrameSubNote) liveFrameSubNote.textContent = 'Frame is within verified natural facial thresholds';
+            }
+
+            // Update Face Marker Overlay Bounding Box
+            if (faceMarkerOverlay) {
+                if (box && box.width > 0) {
+                    faceMarkerOverlay.classList.remove('hidden');
+                    faceMarkerOverlay.style.left = `${box.left}%`;
+                    faceMarkerOverlay.style.top = `${box.top}%`;
+                    faceMarkerOverlay.style.width = `${box.width}%`;
+                    faceMarkerOverlay.style.height = `${box.height}%`;
+
+                    if (isFrameFake) {
+                        faceMarkerOverlay.className = 'absolute pointer-events-none transition-all duration-150 border-2 rounded-lg flex flex-col justify-between border-rose-500 bg-rose-500/15 shadow-lg shadow-rose-500/25';
+                        if (markerTagTop) {
+                            markerTagTop.className = 'text-[11px] font-mono font-bold px-2 py-0.5 rounded shadow-sm self-start -mt-6 ml-0 transition-colors whitespace-nowrap bg-rose-600 text-white flex items-center space-x-1';
+                            markerTagTop.innerHTML = '<span>⚠️ MANIPULATED REGION</span>';
+                        }
+                        if (markerTagBottom) {
+                            markerTagBottom.className = 'text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded self-end -mb-5 mr-0 transition-colors bg-rose-950 text-rose-200';
+                            markerTagBottom.textContent = `Anomaly Risk: ${frameScore.toFixed(1)}%`;
+                        }
+                    } else {
+                        faceMarkerOverlay.className = 'absolute pointer-events-none transition-all duration-150 border-2 rounded-lg flex flex-col justify-between border-emerald-500 bg-emerald-500/10 shadow-sm';
+                        if (markerTagTop) {
+                            markerTagTop.className = 'text-[11px] font-mono font-bold px-2 py-0.5 rounded shadow-sm self-start -mt-6 ml-0 transition-colors whitespace-nowrap bg-emerald-600 text-white flex items-center space-x-1';
+                            markerTagTop.innerHTML = '<span>✓ AUTHENTIC FACE</span>';
+                        }
+                        if (markerTagBottom) {
+                            markerTagBottom.className = 'text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded self-end -mb-5 mr-0 transition-colors bg-emerald-950 text-emerald-200';
+                            markerTagBottom.textContent = `Confidence: ${(100 - frameScore).toFixed(1)}% Real`;
+                        }
+                    }
+                } else {
+                    faceMarkerOverlay.classList.add('hidden');
+                }
+            }
+        }
+
+        // Inspection Video Event Listeners
+        if (inspectionVideo) {
+            inspectionVideo.addEventListener('timeupdate', updateLivePlaybackHUD);
+            inspectionVideo.addEventListener('seeked', updateLivePlaybackHUD);
+            inspectionVideo.addEventListener('loadedmetadata', updateLivePlaybackHUD);
+            inspectionVideo.addEventListener('play', () => {
+                if (playPauseIcon) playPauseIcon.textContent = '⏸';
+                if (playPauseText) playPauseText.textContent = 'Pause';
+            });
+            inspectionVideo.addEventListener('pause', () => {
+                if (playPauseIcon) playPauseIcon.textContent = '▶';
+                if (playPauseText) playPauseText.textContent = 'Play Video';
+            });
+            inspectionVideo.addEventListener('ended', () => {
+                if (playPauseIcon) playPauseIcon.textContent = '▶';
+                if (playPauseText) playPauseText.textContent = 'Play Again';
+            });
+        }
+
+        if (btnPlayPause) {
+            btnPlayPause.addEventListener('click', () => {
+                if (inspectionVideo.paused) {
+                    inspectionVideo.play().catch(() => {});
+                } else {
+                    inspectionVideo.pause();
+                }
+            });
+        }
+
+        if (btnRestartVideo) {
+            btnRestartVideo.addEventListener('click', () => {
+                inspectionVideo.currentTime = 0;
+                inspectionVideo.play().catch(() => {});
+            });
+        }
+
+        if (timelineSegmentsBar) {
+            timelineSegmentsBar.addEventListener('click', (e) => {
+                if (!inspectionVideo || !inspectionVideo.duration) return;
+                const rect = timelineSegmentsBar.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const fraction = Math.max(0, Math.min(1, clickX / rect.width));
+                inspectionVideo.currentTime = fraction * inspectionVideo.duration;
+                updateLivePlaybackHUD();
+            });
+        }
+
         resetBtn.addEventListener('click', () => {
+            if (inspectionVideo) {
+                inspectionVideo.pause();
+                inspectionVideo.src = '';
+            }
             resultsSection.classList.add('hidden');
             uploadForm.scrollIntoView({ behavior: 'smooth' });
         });

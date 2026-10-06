@@ -148,12 +148,15 @@ async def predict_video(
                 "high_frequency_ratio": round(fd.high_frequency_ratio, 3) if fd else 0,
                 "has_generative_smoothing": bool(fd.has_generative_smoothing) if fd else False,
             },
+            "video_url": f"/api/video/{req_id}",
             "temporal_dynamics": {
                 "stability_score": round(fd.temporal_stability_score, 1) if fd else 0,
                 "frame_variance": round(fd.frame_variance, 2) if fd else 0,
                 "peak_timestamp_seconds": round(fd.peak_timestamp_seconds, 2) if fd else 0,
                 "peak_frame_score_pct": round(fd.peak_frame_score_pct, 1) if fd else 0,
                 "frame_probabilities": [round(p * 100, 1) for p in report.fake_probability_per_frame],
+                "frame_times_seconds": [round(t, 2) for t in (report.frame_times_seconds or [])],
+                "face_boxes": report.face_boxes if report.face_boxes else [],
             },
             "visualizations": {
                 "visual_attention_b64": b64["visual_attention"],
@@ -169,6 +172,15 @@ async def predict_video(
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/video/{req_id}")
+def stream_uploaded_video(req_id: str):
+    matches = list(UPLOAD_DIR.glob(f"upload_{req_id}.*"))
+    if not matches:
+        raise HTTPException(status_code=404, detail="Video not found.")
+    video_path = matches[0]
+    return FileResponse(path=video_path, media_type="video/mp4")
 
 
 @app.get("/api/report/{req_id}")

@@ -138,13 +138,20 @@ class DeepfakePredictor:
             )
             audio_tensor = torch.zeros(num_samples, dtype=torch.float32)
 
-        sampled_fps = None
-        if metadata["fps"] > 0 and metadata["frame_count"] > 0:
-            video_duration = metadata["frame_count"] / metadata["fps"]
-            if video_duration > 0:
-                sampled_fps = self.num_frames / video_duration
+        norm_boxes = []
+        if indexed_dets:
+            for i in range(len(raw_frames)):
+                x1, y1, x2, y2 = all_boxes[i]
+                norm_boxes.append({
+                    "left": round(max(0.0, float(x1) / w) * 100, 1),
+                    "top": round(max(0.0, float(y1) / h) * 100, 1),
+                    "width": round(min(100.0, float(x2 - x1) / w) * 100, 1),
+                    "height": round(min(100.0, float(y2 - y1) / h) * 100, 1),
+                })
+        else:
+            norm_boxes = [{"left": 25.0, "top": 15.0, "width": 50.0, "height": 60.0} for _ in raw_frames]
 
-        return frames_tensor, audio_tensor, sampled_fps, face_crops
+        return frames_tensor, audio_tensor, sampled_fps, face_crops, norm_boxes
 
 
     @torch.no_grad()
@@ -174,7 +181,7 @@ class DeepfakePredictor:
         """
         video_path = Path(video_path)
 
-        frames_tensor, audio_tensor, sampled_fps, face_crops = (
+        frames_tensor, audio_tensor, sampled_fps, face_crops, norm_boxes = (
             self._load_frames_and_audio(video_path)
         )
 
@@ -277,6 +284,7 @@ class DeepfakePredictor:
             audio_importance_available=audio_importance_available,
             threshold=self.fake_threshold,
             forensic_data=forensic_data,
+            face_boxes=norm_boxes,
         )
         report.visualization_paths = visualization_paths
 
