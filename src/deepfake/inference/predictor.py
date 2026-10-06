@@ -138,6 +138,12 @@ class DeepfakePredictor:
             )
             audio_tensor = torch.zeros(num_samples, dtype=torch.float32)
 
+        sampled_fps = None
+        if metadata.get("fps", 0) > 0 and metadata.get("frame_count", 0) > 0:
+            video_duration = metadata["frame_count"] / metadata["fps"]
+            if video_duration > 0:
+                sampled_fps = self.num_frames / video_duration
+
         norm_boxes = []
         if indexed_dets:
             for i in range(len(raw_frames)):
