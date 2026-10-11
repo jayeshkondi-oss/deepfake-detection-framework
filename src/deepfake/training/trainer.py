@@ -346,10 +346,8 @@ class Trainer:
                 checkpoint["epoch"] + 1
             )
 
-            self.best_val_loss = checkpoint.get(
-                "best_val_loss",
-                float("inf"),
-            )
+            # Reset best_val_loss for fine-tuning so the best model on the new dataset is saved
+            self.best_val_loss = float("inf")
 
             self.history = checkpoint.get(
                 "history",

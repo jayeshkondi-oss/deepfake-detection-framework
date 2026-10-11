@@ -76,9 +76,12 @@ class CheckpointManager:
         )
 
         if optimizer is not None:
-            optimizer.load_state_dict(
-                checkpoint["optimizer_state_dict"]
-            )
+            try:
+                optimizer.load_state_dict(
+                    checkpoint["optimizer_state_dict"]
+                )
+            except Exception as e:
+                print(f"[*] Note: optimizer state not restored ({e}). Using fresh optimizer for fine-tuning.")
 
         if scheduler is not None:
             scheduler_state = checkpoint.get(
@@ -86,9 +89,12 @@ class CheckpointManager:
             )
 
             if scheduler_state is not None:
-                scheduler.load_state_dict(
-                    scheduler_state
-                )
+                try:
+                    scheduler.load_state_dict(
+                        scheduler_state
+                    )
+                except Exception:
+                    pass
 
         return checkpoint
 
