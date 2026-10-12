@@ -194,8 +194,12 @@ class DeepfakePredictor:
         frames_tensor = frames_tensor.to(self.device)
         audio_tensor = audio_tensor.to(self.device)
 
-        # Test-Time Augmentation (TTA): average predictions from original and
-        # horizontally flipped frames to improve generalization on unseen/out-of-distribution videos
+        # Test-Time Augmentation (TTA) with Audio-Robustness:
+        # A common failure mode in multimodal deepfake detection is audio shortcut bias:
+        # if the training dataset had speech mostly on fakes and silence on reals (or vice-versa),
+        # genuine speech in real videos can unilaterally inflate the fake score.
+        # We compute both audio-visual and visual-only predictions. Genuine visual evidence
+        # anchors the score so acoustic presence alone cannot force an authentic video to FAKE.
         probs_orig = self.model.predict_proba(
             frames_tensor.unsqueeze(0),
             audio_tensor.unsqueeze(0),
@@ -205,25 +209,35 @@ class DeepfakePredictor:
             flipped_frames.unsqueeze(0),
             audio_tensor.unsqueeze(0),
         )
-        probabilities = 0.5 * (probs_orig + probs_flip)
-        fake_probability = probabilities[0, 1].item()
+        p_av = 0.5 * (probs_orig[0, 1].item() + probs_flip[0, 1].item())
 
-        # ponytail: Hybrid forensic fusion — boost neural score when frequency
-        # analysis detects generative smoothing (low HF ratio / low Laplacian).
-        # Without this, modern holistic AI generators that lack splice boundaries
-        # score ~40% on the neural network alone. The forensic texture signal
-        # (which already fires correctly) closes the gap. Ceiling: a hard-coded
-        # blend weight; upgrade path is learned fusion via a calibration set.
+        # Visual-only prediction with silent audio
+        zero_audio = torch.zeros_like(audio_tensor.unsqueeze(0))
+        p_v_orig = self.model.predict_proba(frames_tensor.unsqueeze(0), zero_audio)[0, 1].item()
+        p_v_flip = self.model.predict_proba(flipped_frames.unsqueeze(0), zero_audio)[0, 1].item()
+        p_visual = 0.5 * (p_v_orig + p_v_flip)
+
+        # Quantitative frequency and texture diagnostics
         texture_data = self.forensic_analyzer.analyze_frequency_texture(face_crops)
-        if texture_data["has_generative_smoothing"]:
-            # Forensic confidence: how far below thresholds the metrics fall.
-            # hf_ratio threshold=0.22, laplacian threshold=40.0
+        has_smoothing = texture_data["has_generative_smoothing"]
+        is_natural_texture = texture_data["laplacian_variance"] > 300.0 and texture_data["high_freq_ratio"] > 0.30
+
+        # Audio-robust score arbitration:
+        # If camera sensor noise and skin pores are authentic (is_natural_texture),
+        # prevent audio shortcut artifacts from falsely marking the video as fake.
+        if is_natural_texture and p_visual < 0.35:
+            fake_probability = p_visual
+        elif has_smoothing:
+            # Synthetic generative diffusion/smoothing detected: use the stronger
+            # multimodal indicator and fuse with frequency-domain evidence.
+            neural_fake = max(p_av, p_visual)
             hf_deficit = max(0.0, (0.22 - texture_data["high_freq_ratio"]) / 0.22)
             lap_deficit = max(0.0, (40.0 - texture_data["laplacian_variance"]) / 40.0)
             forensic_signal = max(hf_deficit, lap_deficit)  # 0..1
-            # Blend: 60% neural + 40% forensic boost (capped at 0.95)
-            forensic_boost = 0.65 + 0.30 * forensic_signal  # 0.65..0.95
-            fake_probability = min(0.95, 0.6 * fake_probability + 0.4 * forensic_boost)
+            forensic_boost = 0.70 + 0.25 * forensic_signal  # 0.70..0.95
+            fake_probability = min(0.95, 0.5 * neural_fake + 0.5 * forensic_boost)
+        else:
+            fake_probability = 0.5 * (p_av + p_visual)
 
         # Apply confidence threshold: must be >= fake_threshold to be FAKE.
         is_fake = fake_probability >= self.fake_threshold
