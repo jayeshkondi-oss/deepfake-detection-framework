@@ -342,9 +342,10 @@ class Trainer:
                 device=str(self.device),
             )
 
-            start_epoch = (
-                checkpoint["epoch"] + 1
-            )
+            # When fine-tuning (resume_from), always start epoch count from 0
+            # so --epochs N means exactly N new epochs, regardless of what
+            # epoch number was stored in the checkpoint.
+            start_epoch = 0
 
             # Reset best_val_loss for fine-tuning so the best model on the new dataset is saved
             self.best_val_loss = float("inf")

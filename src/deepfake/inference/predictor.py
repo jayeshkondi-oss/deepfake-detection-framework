@@ -208,6 +208,23 @@ class DeepfakePredictor:
         probabilities = 0.5 * (probs_orig + probs_flip)
         fake_probability = probabilities[0, 1].item()
 
+        # ponytail: Hybrid forensic fusion — boost neural score when frequency
+        # analysis detects generative smoothing (low HF ratio / low Laplacian).
+        # Without this, modern holistic AI generators that lack splice boundaries
+        # score ~40% on the neural network alone. The forensic texture signal
+        # (which already fires correctly) closes the gap. Ceiling: a hard-coded
+        # blend weight; upgrade path is learned fusion via a calibration set.
+        texture_data = self.forensic_analyzer.analyze_frequency_texture(face_crops)
+        if texture_data["has_generative_smoothing"]:
+            # Forensic confidence: how far below thresholds the metrics fall.
+            # hf_ratio threshold=0.22, laplacian threshold=40.0
+            hf_deficit = max(0.0, (0.22 - texture_data["high_freq_ratio"]) / 0.22)
+            lap_deficit = max(0.0, (40.0 - texture_data["laplacian_variance"]) / 40.0)
+            forensic_signal = max(hf_deficit, lap_deficit)  # 0..1
+            # Blend: 60% neural + 40% forensic boost (capped at 0.95)
+            forensic_boost = 0.65 + 0.30 * forensic_signal  # 0.65..0.95
+            fake_probability = min(0.95, 0.6 * fake_probability + 0.4 * forensic_boost)
+
         # Apply confidence threshold: must be >= fake_threshold to be FAKE.
         is_fake = fake_probability >= self.fake_threshold
         print(
