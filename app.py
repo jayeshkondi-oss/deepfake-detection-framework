@@ -200,6 +200,25 @@ def download_html_report(req_id: str):
     )
 
 
+# Faculty Demonstration Route
+app.mount(
+    "/preprocessing-demo-files",
+    StaticFiles(directory="outputs/preprocessing_demo"),
+    name="preprocessing_demo_files"
+)
+
+@app.get("/preprocessing-demo", response_class=HTMLResponse)
+def serve_preprocessing_demo():
+    demo_file = Path("outputs/preprocessing_demo/preprocessing_demo.html")
+    if not demo_file.exists():
+        raise HTTPException(status_code=404, detail="Preprocessing demo not generated. Run demo_preprocessing.py first.")
+    with open(demo_file, "r", encoding="utf-8") as f:
+        # replace relative img paths with mounted static path
+        content = f.read()
+        content = content.replace('src="step', 'src="/preprocessing-demo-files/step')
+        return content
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     print(f"[+] Starting DeepForensics Web Server on http://127.0.0.1:{port}")
