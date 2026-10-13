@@ -869,15 +869,15 @@
                     liveFrameStatusBadge.className = 'text-xs font-mono font-black uppercase px-3 py-1.5 rounded-lg text-white bg-rose-600 shadow-sm flex items-center space-x-1.5';
                 }
                 if (liveFrameStatusText) liveFrameStatusText.textContent = 'FAKE (Manipulated Frame)';
-                if (liveFrameDetailTitle) liveFrameDetailTitle.textContent = `Anomaly Detected at ${times[bestIdx].toFixed(1)}s (Frame #${bestIdx + 1})`;
-                if (liveFrameSubNote) liveFrameSubNote.textContent = 'Facial inconsistencies & high-frequency anomalies detected';
+                if (liveFrameDetailTitle) liveFrameDetailTitle.textContent = `Artificial Anomaly at ${times[bestIdx].toFixed(1)}s (Frame #${bestIdx + 1})`;
+                if (liveFrameSubNote) liveFrameSubNote.textContent = 'Synthetic skin airbrushing, loss of natural pores, or facial seam warping detected on this frame';
             } else {
                 if (liveFrameStatusBadge) {
                     liveFrameStatusBadge.className = 'text-xs font-mono font-black uppercase px-3 py-1.5 rounded-lg text-white bg-emerald-600 shadow-sm flex items-center space-x-1.5';
                 }
                 if (liveFrameStatusText) liveFrameStatusText.textContent = 'REAL (Authentic Frame)';
-                if (liveFrameDetailTitle) liveFrameDetailTitle.textContent = `Natural Dynamics at ${times[bestIdx].toFixed(1)}s (Frame #${bestIdx + 1})`;
-                if (liveFrameSubNote) liveFrameSubNote.textContent = 'Frame is within verified natural facial thresholds';
+                if (liveFrameDetailTitle) liveFrameDetailTitle.textContent = `Authentic Physiology at ${times[bestIdx].toFixed(1)}s (Frame #${bestIdx + 1})`;
+                if (liveFrameSubNote) liveFrameSubNote.textContent = 'Natural camera sensor grain, microscopic skin pores, and smooth facial transitions verified';
             }
 
             // Update Face Marker Overlay Bounding Box
