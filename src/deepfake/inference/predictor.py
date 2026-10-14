@@ -47,7 +47,7 @@ class DeepfakePredictor:
         audio_sample_rate: int = 16000,
         audio_duration_seconds: float = 4.0,
         pretrained: bool = True,
-        fake_threshold: float = 0.65,
+        fake_threshold: float = 0.50,
     ):
         self.device = device
         self.num_frames = num_frames
@@ -220,28 +220,29 @@ class DeepfakePredictor:
         # Quantitative frequency and texture diagnostics
         texture_data = self.forensic_analyzer.analyze_frequency_texture(face_crops)
         has_smoothing = texture_data["has_generative_smoothing"]
-        is_natural_texture = texture_data["laplacian_variance"] > 300.0 and texture_data["high_freq_ratio"] > 0.30
+        is_natural_texture = (
+            texture_data["laplacian_variance"] >= 85.0
+            and texture_data["high_freq_ratio"] >= 0.19
+            and not has_smoothing
+        )
 
-        # Audio-robust score arbitration:
-        # If camera sensor noise and skin pores are authentic (is_natural_texture),
-        # prevent audio shortcut artifacts from falsely marking the video as fake.
-        if is_natural_texture and p_visual < 0.35:
-            # Genuine camera recording with verified pores and natural optics
-            fake_probability = min(0.12, p_visual)
-        elif has_smoothing:
+        base_score = 0.5 * (p_av + p_visual)
+
+        if has_smoothing:
             # Synthetic generative diffusion/smoothing detected:
             # High-confidence AI deepfake signature. Calibrate cleanly into 90%+ confidence.
-            hf_deficit = max(0.0, (0.22 - texture_data["high_freq_ratio"]) / 0.22)
-            lap_deficit = max(0.0, (40.0 - texture_data["laplacian_variance"]) / 40.0)
+            hf_deficit = max(0.0, (0.20 - texture_data["high_freq_ratio"]) / 0.20)
+            lap_deficit = max(0.0, (75.0 - texture_data["laplacian_variance"]) / 75.0)
             forensic_signal = max(hf_deficit, lap_deficit)  # 0..1
-            # 90% base confidence for confirmed generative deepfakes, scaling up to 96%
             fake_probability = min(0.96, 0.90 + 0.06 * forensic_signal)
+        elif base_score >= self.fake_threshold:
+            # Neural model detects deepfake anomalies (e.g. face-swap blending seams)
+            fake_probability = min(0.96, max(0.90, base_score * 1.5))
+        elif is_natural_texture:
+            # Natural camera recording with authentic edge gradients and skin microtexture
+            fake_probability = min(0.20, max(0.05, base_score * 0.35))
         else:
-            base_score = 0.5 * (p_av + p_visual)
-            if base_score >= self.fake_threshold:
-                fake_probability = min(0.95, max(0.88, base_score * 1.3))
-            else:
-                fake_probability = base_score
+            fake_probability = min(0.35, base_score)
 
         # Apply confidence threshold: must be >= fake_threshold to be FAKE.
         is_fake = fake_probability >= self.fake_threshold
@@ -319,6 +320,58 @@ class DeepfakePredictor:
             threshold=self.fake_threshold,
         )
 
+        # Construct detailed per-frame explanation and thumbnails for UI frame tracking
+        import base64
+        extracted_frames = []
+        frame_times_list = frame_times.tolist() if frame_times is not None else []
+        probs_list = per_frame_probs.tolist()
+
+        for i, crop in enumerate(face_crops):
+            t_sec = frame_times_list[i] if i < len(frame_times_list) else round(i * 0.25, 2)
+            prob_i = probs_list[i] if i < len(probs_list) else fake_probability
+            is_frame_fake = prob_i >= self.fake_threshold
+
+            thumb_b64 = ""
+            if crop is not None and getattr(crop, "size", 0) > 0:
+                try:
+                    h_c, w_c = crop.shape[:2]
+                    target_w = 140
+                    target_h = max(30, int(h_c * (target_w / max(w_c, 1))))
+                    thumb = cv2.resize(crop, (target_w, target_h))
+                    success, enc = cv2.imencode(".jpg", thumb, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
+                    if success:
+                        thumb_b64 = base64.b64encode(enc).decode("ascii")
+                except Exception:
+                    pass
+
+            if is_frame_fake:
+                if has_smoothing:
+                    reason = "Synthetic generative smoothing: loss of natural skin micro-pores and airbrushed diffusion artifacts."
+                elif forensic_data and forensic_data.primary_focus_region == "Face Blending Boundary":
+                    reason = "Face-swap blending seam anomaly: digital edge boundary interpolation."
+                elif forensic_data and forensic_data.primary_focus_region == "Perioral Region (Mouth & Lips)":
+                    reason = "Perioral anomaly: unnatural lip contours and synthesized speech articulation."
+                else:
+                    reason = "Neural attention anomaly: temporal facial distortion and synthetic pixel patterns."
+            else:
+                if is_natural_texture:
+                    reason = "Authentic camera optical noise, genuine skin pores, and natural illumination."
+                else:
+                    reason = "Natural facial physiology and stable anatomical features."
+
+            extracted_frames.append({
+                "frame_index": i + 1,
+                "timestamp_seconds": round(float(t_sec), 2),
+                "fake_probability": round(float(prob_i), 4),
+                "fake_pct": round(float(prob_i) * 100, 1),
+                "real_pct": round((1.0 - float(prob_i)) * 100, 1),
+                "is_fake": is_frame_fake,
+                "verdict": "FAKE" if is_frame_fake else "REAL",
+                "reason": reason,
+                "box": norm_boxes[i] if i < len(norm_boxes) else None,
+                "thumbnail_b64": thumb_b64,
+            })
+
         report = build_report(
             video_path=video_path,
             fake_probability=fake_probability,
@@ -331,6 +384,7 @@ class DeepfakePredictor:
             threshold=self.fake_threshold,
             forensic_data=forensic_data,
             face_boxes=norm_boxes,
+            extracted_frames=extracted_frames,
         )
         report.visualization_paths = visualization_paths
 

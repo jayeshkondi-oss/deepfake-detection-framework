@@ -153,13 +153,21 @@ class ForensicAnalyzer:
             total_energy = np.sum(mag) + 1e-8
             hf_ratios.append(float((total_energy - low_energy) / total_energy))
 
-        mean_lap = float(np.mean(lap_vars)) if lap_vars else 150.0
-        mean_hf = float(np.mean(hf_ratios)) if hf_ratios else 0.35
+        # Use top 60% sharpest crops to prevent out-of-focus background crops from dragging down metrics
+        if len(lap_vars) >= 4:
+            sorted_indices = np.argsort(lap_vars)[len(lap_vars) // 3:]
+            mean_lap = float(np.mean([lap_vars[i] for i in sorted_indices]))
+            mean_hf = float(np.mean([hf_ratios[i] for i in sorted_indices]))
+        else:
+            mean_lap = float(np.mean(lap_vars)) if lap_vars else 150.0
+            mean_hf = float(np.mean(hf_ratios)) if hf_ratios else 0.35
 
-        has_smoothing = mean_lap < 40.0 or mean_hf < 0.22
+        # Generative AI smoothing exhibits both low Laplacian variance (<75.0) and low spectral high-frequency (<0.20),
+        # or exceptionally flat edge sharpness (<35.0)
+        has_smoothing = (mean_lap < 75.0 and mean_hf < 0.20) or (mean_lap < 35.0)
 
         if has_smoothing:
-            texture_score = max(25.0, min(60.0, (mean_lap / 40.0) * 55.0))
+            texture_score = max(25.0, min(60.0, (mean_lap / 60.0) * 55.0))
         else:
             texture_score = min(98.0, 75.0 + min(23.0, (mean_lap / 300.0) * 23.0))
 
