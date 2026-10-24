@@ -39,3 +39,4 @@ outputs/*
 
 # Logs
 *.log.venv/
+.tools/
