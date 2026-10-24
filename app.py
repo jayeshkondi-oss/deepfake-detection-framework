@@ -114,9 +114,9 @@ async def predict_video(
         try:
             from demo_preprocessing import run_preprocessing_demo
             # Save into current report dir
-            run_preprocessing_demo(str(saved_video_path), str(vis_dir / "preprocessing"))
+            run_preprocessing_demo(str(saved_video_path), str(vis_dir / "preprocessing"), report=report)
             # Also update global demo dir so /preprocessing-demo shows the latest live video
-            run_preprocessing_demo(str(saved_video_path), "outputs/preprocessing_demo")
+            run_preprocessing_demo(str(saved_video_path), "outputs/preprocessing_demo", report=report)
         except Exception as pe:
             print(f"[!] Warning: Preprocessing demo export failed: {pe}")
 

@@ -128,15 +128,103 @@
             </div>
         </div>
 
-        <div id="loadingSection" class="hidden max-w-2xl mx-auto my-12 text-center">
-            <div class="glass-panel rounded-2xl p-8 bg-white border border-slate-200">
-                <div class="relative w-16 h-16 mx-auto mb-5">
-                    <div class="w-16 h-16 rounded-full border-4 border-slate-200 border-t-indigo-600 animate-spin"></div>
+        <!-- REAL-TIME PREPROCESSING & ANALYSIS PIPELINE STEPPER -->
+        <div id="loadingSection" class="hidden max-w-3xl mx-auto my-10">
+            <div class="glass-panel rounded-2xl p-6 sm:p-8 bg-slate-900 text-white border border-slate-800 shadow-2xl space-y-6">
+                <!-- Header -->
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                    <div class="flex items-center space-x-3">
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
+                        </span>
+                        <div>
+                            <h3 class="text-base sm:text-lg font-extrabold text-white tracking-wide">
+                                Live Preprocessing & Feature Extraction
+                            </h3>
+                            <p class="text-xs text-slate-400">Transforming video input into normalized multimodal neural tensors</p>
+                        </div>
+                    </div>
+                    <span id="loadingProgressPct" class="text-sm font-mono font-bold px-3 py-1 rounded-full bg-sky-950 text-sky-400 border border-sky-800/60">0%</span>
                 </div>
-                <h3 id="loadingTitle" class="text-lg font-bold text-slate-900 mb-1.5">Analyzing Video Forensics...</h3>
-                <p id="loadingSub" class="text-xs text-slate-500 font-mono mb-4">Extracting 16-frame sequence & temporal face tracking</p>
-                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
-                    <div id="progressBar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 25%"></div>
+
+                <!-- Main Progress Bar -->
+                <div class="space-y-2">
+                    <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700/60">
+                        <div id="progressBar" class="bg-gradient-to-r from-sky-500 via-indigo-500 to-emerald-400 h-2.5 rounded-full transition-all duration-300" style="width: 5%"></div>
+                    </div>
+                    <div class="flex justify-between text-[11px] font-mono text-slate-400">
+                        <span id="loadingStepStatusText">Initializing Decord Video Decoder...</span>
+                        <span id="loadingStepTimeEstimate">Active</span>
+                    </div>
+                </div>
+
+                <!-- 4 Real-Time Pipeline Stages -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <!-- Step 1 -->
+                    <div id="stepCard1" class="p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 transition-all duration-300 flex items-start space-x-3">
+                        <div id="stepIcon1" class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-sm font-mono font-bold text-slate-400 flex-shrink-0">
+                            1
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-bold text-slate-200">Uniform Temporal Sampling</h4>
+                                <span id="stepBadge1" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">Waiting</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400 mt-0.5">16 frames sampled uniformly across 0% to 100% via Decord</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div id="stepCard2" class="p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 transition-all duration-300 flex items-start space-x-3">
+                        <div id="stepIcon2" class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-sm font-mono font-bold text-slate-400 flex-shrink-0">
+                            2
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-bold text-slate-200">MediaPipe Face Tracking</h4>
+                                <span id="stepBadge2" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">Waiting</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400 mt-0.5">+20% expanded boundary crop retains forehead & jaw seams</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div id="stepCard3" class="p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 transition-all duration-300 flex items-start space-x-3">
+                        <div id="stepIcon3" class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-sm font-mono font-bold text-slate-400 flex-shrink-0">
+                            3
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-bold text-slate-200">224&times;224 ViT Normalization</h4>
+                                <span id="stepBadge3" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">Waiting</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400 mt-0.5">PyTorch tensor [16, 3, 224, 224] calibrated with ImageNet stats</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div id="stepCard4" class="p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 transition-all duration-300 flex items-start space-x-3">
+                        <div id="stepIcon4" class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-sm font-mono font-bold text-slate-400 flex-shrink-0">
+                            4
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-bold text-slate-200">16 kHz Audio Demuxing</h4>
+                                <span id="stepBadge4" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">Waiting</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400 mt-0.5">64,000 float samples @ 16 kHz windowed for Wav2Vec 2.0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Pipeline Status Banner -->
+                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-xs font-mono text-slate-400">
+                    <span class="flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span id="pipelineStatusDetail">Executing pipeline on active worker...</span>
+                    </span>
+                    <span class="text-sky-400">PyTorch + MediaPipe</span>
                 </div>
             </div>
         </div>
@@ -309,33 +397,78 @@
                 </div>
             </div>
 
-            <!-- 2.5 EXTRACTED FRAMES FORENSIC LOCALIZATION (16 SAMPLES) -->
-            <div id="extractedFramesSection" class="glass-panel rounded-2xl p-6 sm:p-8 space-y-5 bg-white">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
-                    <div class="flex items-center space-x-2.5">
-                        <span class="text-2xl">🎞️</span>
+            <!-- 2.5 LIVE PREPROCESSING & PER-FRAME FACE TRACKING PIPELINE -->
+            <div id="livePreprocessingSection" class="glass-panel rounded-2xl p-6 sm:p-8 bg-slate-900 text-white shadow-xl border border-slate-800 space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+                    <div class="flex items-center space-x-3.5">
+                        <div class="w-12 h-12 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner">
+                            🔬
+                        </div>
                         <div>
-                            <h3 class="text-lg font-extrabold text-slate-900 flex items-center space-x-2">
-                                <span>16 Extracted Frames & Face Tracking Localization</span>
-                                <span id="extractedFramesCountBadge" class="text-xs font-mono px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-semibold border border-slate-300">16 Frames Analyzed</span>
-                            </h3>
-                            <p class="text-xs text-slate-500 mt-0.5">Every frame extracted during preprocessing is evaluated individually. Check below to see exactly which frames are Authentic (Real) vs Manipulated (Fake). Click any frame card to jump the video directly to that exact moment.</p>
+                            <h4 class="text-lg font-extrabold text-white flex items-center space-x-2">
+                                <span>Live Preprocessing & Multimodal Biometrics</span>
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">✓ Auto Live-Updated</span>
+                            </h4>
+                            <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                                Exact biometric tensors extracted from this video: 16 uniform face crops with Real/Fake boundary indicators, MediaPipe 20% margin expansion, and standardized 16 kHz audio track.
+                            </p>
                         </div>
                     </div>
-                </div>
-
-                <!-- Prominent Frame Localization Alert Banner -->
-                <div id="frameLocalizationAlert" class="rounded-xl p-4 border flex items-start space-x-3 transition-colors bg-emerald-50 border-emerald-300 text-emerald-950 shadow-sm">
-                    <span id="frameLocalizationAlertIcon" class="text-2xl mt-0.5">✅</span>
-                    <div class="space-y-1 flex-1">
-                        <div id="frameLocalizationAlertTitle" class="text-sm font-bold">ALL 16 EXTRACTED FRAMES AUTHENTIC (REAL)</div>
-                        <div id="frameLocalizationAlertDesc" class="text-xs text-slate-600 leading-relaxed">No manipulation detected in any frame. Every frame displays organic skin pores, natural edge sharpness, and stable lighting.</div>
+                    <div class="flex items-center space-x-3 w-full md:w-auto justify-end flex-shrink-0">
+                        <a id="btnLivePreprocessing" href="/preprocessing-demo" target="_blank" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-sky-500/25 flex items-center space-x-2 transition transform active:scale-95 whitespace-nowrap">
+                            <span>Open Full Faculty Preprocessing Report</span>
+                            <span>↗</span>
+                        </a>
                     </div>
                 </div>
 
-                <!-- 16 Extracted Frames Interactive Grid -->
-                <div id="extractedFramesGrid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-                    <!-- Populated dynamically via JS -->
+                <!-- Tab Controls for Preprocessing Artifacts -->
+                <div class="flex flex-wrap items-center gap-2 border-b border-slate-800 pb-3">
+                    <button type="button" id="tabBtnCrops" onclick="switchPreprocTab('crops')" class="px-4 py-2 rounded-lg text-xs font-bold transition bg-sky-600 text-white shadow-sm flex items-center space-x-1.5">
+                        <span>🖼️</span>
+                        <span>16 Face Crops Montage (ViT-Base)</span>
+                    </button>
+                    <button type="button" id="tabBtnAudio" onclick="switchPreprocTab('audio')" class="px-4 py-2 rounded-lg text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center space-x-1.5">
+                        <span>🎵</span>
+                        <span>16 kHz Audio & Spectrogram (Wav2Vec2)</span>
+                    </button>
+                    <button type="button" id="tabBtnLandmarks" onclick="switchPreprocTab('landmarks')" class="px-4 py-2 rounded-lg text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center space-x-1.5">
+                        <span>📐</span>
+                        <span>Face Landmark Detection & 20% Margin</span>
+                    </button>
+                </div>
+
+                <!-- Tab 1: 16 Face Crops Montage -->
+                <div id="tabContentCrops" class="space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-300 font-mono gap-1">
+                        <span>16 Uniform Face Crops [224&times;224 px]: <span class="text-emerald-400 font-bold">Green Border = Real</span> | <span class="text-rose-400 font-bold">Red Border = Fake</span></span>
+                        <span class="text-slate-400">ImageNet Normalized &bull; ViT-Base Patches</span>
+                    </div>
+                    <div class="w-full rounded-xl overflow-hidden bg-black border border-slate-800 p-2 shadow-inner">
+                        <img id="previewMontageImg" src="/preprocessing-demo-files/step3_16_crops_montage.png" class="w-full object-contain rounded-lg" alt="16 Face Crops Montage">
+                    </div>
+                </div>
+
+                <!-- Tab 2: Audio Waveform & Spectrogram -->
+                <div id="tabContentAudio" class="hidden space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-300 font-mono gap-1">
+                        <span>Standardized Audio Track [64,000 Samples @ 16 kHz]: Time-Domain Waveform + 8,000 Hz Spectrogram</span>
+                        <span class="text-slate-400">Wav2Vec 2.0 Input</span>
+                    </div>
+                    <div class="w-full rounded-xl overflow-hidden bg-black border border-slate-800 p-2 shadow-inner">
+                        <img id="previewAudioImg" src="/preprocessing-demo-files/step4_audio_waveform.png" class="w-full object-contain rounded-lg" alt="16kHz Audio Waveform & Spectrogram">
+                    </div>
+                </div>
+
+                <!-- Tab 3: Landmark Detection & Margin Comparison -->
+                <div id="tabContentLandmarks" class="hidden space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-300 font-mono gap-1">
+                        <span>MediaPipe Face Tracking: <span class="text-sky-400 font-bold">Blue = Tight Landmark Box</span> vs <span class="text-emerald-400 font-bold">Green = +20% Margin Crop</span></span>
+                        <span class="text-slate-400">Forehead & Jaw Blending Seams</span>
+                    </div>
+                    <div class="w-full rounded-xl overflow-hidden bg-black border border-slate-800 p-2 shadow-inner flex justify-center">
+                        <img id="previewLandmarksImg" src="/preprocessing-demo-files/step2_face_detection_comparison.jpg" class="max-h-96 object-contain rounded-lg" alt="MediaPipe Face Detection with Margin">
+                    </div>
                 </div>
             </div>
 
@@ -637,6 +770,67 @@
             uploadPrompt.classList.remove('hidden');
         });
 
+        function switchPreprocTab(tab) {
+            const tabs = ['crops', 'audio', 'landmarks'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+                const content = document.getElementById(`tabContent${t.charAt(0).toUpperCase() + t.slice(1)}`);
+                if (t === tab) {
+                    if (btn) {
+                        btn.className = 'px-4 py-2 rounded-lg text-xs font-bold transition bg-sky-600 text-white shadow-sm flex items-center space-x-1.5';
+                    }
+                    if (content) content.classList.remove('hidden');
+                } else {
+                    if (btn) {
+                        btn.className = 'px-4 py-2 rounded-lg text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center space-x-1.5';
+                    }
+                    if (content) content.classList.add('hidden');
+                }
+            });
+        }
+
+        function updatePipelineStepper(step, pct, label, statusDetail) {
+            const progressBar = document.getElementById('progressBar');
+            const loadingProgressPct = document.getElementById('loadingProgressPct');
+            const loadingStepStatusText = document.getElementById('loadingStepStatusText');
+            const pipelineStatusDetail = document.getElementById('pipelineStatusDetail');
+
+            if (progressBar) progressBar.style.width = pct + '%';
+            if (loadingProgressPct) loadingProgressPct.textContent = pct + '%';
+            if (loadingStepStatusText) loadingStepStatusText.textContent = label;
+            if (pipelineStatusDetail && statusDetail) pipelineStatusDetail.textContent = statusDetail;
+
+            for (let i = 1; i <= 4; i++) {
+                const card = document.getElementById(`stepCard${i}`);
+                const icon = document.getElementById(`stepIcon${i}`);
+                const badge = document.getElementById(`stepBadge${i}`);
+                if (!card || !badge || !icon) continue;
+
+                if (i < step) {
+                    // Completed
+                    card.className = 'p-3.5 rounded-xl border border-emerald-500/40 bg-emerald-950/20 transition-all duration-300 flex items-start space-x-3';
+                    icon.className = 'w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-sm';
+                    icon.textContent = '✓';
+                    badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold';
+                    badge.textContent = 'Done';
+                } else if (i === step) {
+                    // Active
+                    card.className = 'p-3.5 rounded-xl border border-sky-500/60 bg-sky-950/30 transition-all duration-300 flex items-start space-x-3 shadow-lg shadow-sky-500/10 ring-1 ring-sky-500/30';
+                    icon.className = 'w-8 h-8 rounded-lg bg-sky-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 animate-pulse';
+                    icon.innerHTML = '<span class="inline-block animate-spin">⚙</span>';
+                    badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-400/40 font-semibold animate-pulse';
+                    badge.textContent = 'Processing...';
+                } else {
+                    // Waiting
+                    card.className = 'p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 transition-all duration-300 flex items-start space-x-3 opacity-60';
+                    icon.className = 'w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-sm font-mono font-bold text-slate-400 flex-shrink-0';
+                    icon.textContent = String(i);
+                    badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400';
+                    badge.textContent = 'Waiting';
+                }
+            }
+        }
+
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!selectedFile) return alert('Please select a video file first!');
@@ -646,20 +840,26 @@
             resultsSection.classList.add('hidden');
             loadingSection.scrollIntoView({ behavior: 'smooth' });
 
-            let p = 10;
+            // Initialize Step 1
+            updatePipelineStepper(1, 15, 'Step 1: Decoding video & sampling 16 uniform frames via Decord...', 'Extracting 16 temporal keyframes across entire duration');
+
+            let stepProgress = 15;
             const iv = setInterval(() => {
-                if (p < 90) {
-                    p += Math.floor(Math.random() * 8) + 4;
-                    progressBar.style.width = p + '%';
-                    if (p > 35 && p <= 65) {
-                        loadingTitle.textContent = 'Extracting ViT & Wav2Vec2 Features...';
-                        loadingSub.textContent = 'Processing Vision Transformer patch tokens and acoustic waves';
-                    } else if (p > 65) {
-                        loadingTitle.textContent = 'Evaluating Multi-Modal XAI Diagnostics...';
-                        loadingSub.textContent = 'ForensicAnalyzer inspecting 2D FFT spectral residuals and facial seams';
-                    }
+                stepProgress += Math.floor(Math.random() * 4) + 3;
+                if (stepProgress > 95) stepProgress = 95;
+
+                if (stepProgress < 30) {
+                    updatePipelineStepper(1, stepProgress, 'Step 1: Uniform temporal frame sampling via Decord...', 'Extracting 16 frames spaced across entire timeline');
+                } else if (stepProgress < 55) {
+                    updatePipelineStepper(2, stepProgress, 'Step 2: MediaPipe face detection & 20% margin expansion...', 'Tracking facial landmarks and preserving boundary seams');
+                } else if (stepProgress < 75) {
+                    updatePipelineStepper(3, stepProgress, 'Step 3: Bilinear resizing to 224x224 & ImageNet normalization...', 'Preparing PyTorch tensors [16, 3, 224, 224] for ViT-Base');
+                } else if (stepProgress < 90) {
+                    updatePipelineStepper(4, stepProgress, 'Step 4: Demuxing audio track & windowing to 16 kHz...', 'Extracting 64,000 float samples for Wav2Vec 2.0');
+                } else {
+                    updatePipelineStepper(5, stepProgress, 'Final Step: Multimodal Cross-Attention & XAI Synthesis...', 'Evaluating ViT rollout, Wav2Vec cross-attention & FFT texture');
                 }
-            }, 600);
+            }, 400);
 
             const fd = new FormData();
             fd.append('video', selectedFile);
@@ -668,10 +868,12 @@
             try {
                 const res = await fetch('/api/predict', { method: 'POST', body: fd });
                 clearInterval(iv);
-                progressBar.style.width = '100%';
+                updatePipelineStepper(5, 100, 'Preprocessing and Forensic Analysis Complete!', 'All multimodal tensors calibrated and classified successfully');
                 if (!res.ok) { const err = await res.json(); throw new Error(err.detail || 'Prediction failed'); }
                 const data = await res.json();
-                renderResults(data);
+                setTimeout(() => {
+                    renderResults(data);
+                }, 300);
             } catch (err) {
                 clearInterval(iv);
                 alert('Analysis error: ' + err.message);
@@ -771,6 +973,15 @@
             } else {
                 audioCard.classList.add('hidden');
             }
+
+            // 5. Refresh Live Preprocessing Artifacts
+            const ts = Date.now();
+            const montageImg = document.getElementById('previewMontageImg');
+            if (montageImg) montageImg.src = `/preprocessing-demo-files/step3_16_crops_montage.png?t=${ts}`;
+            const audioImg = document.getElementById('previewAudioImg');
+            if (audioImg) audioImg.src = `/preprocessing-demo-files/step4_audio_waveform.png?t=${ts}`;
+            const landmarksImg = document.getElementById('previewLandmarksImg');
+            if (landmarksImg) landmarksImg.src = `/preprocessing-demo-files/step2_face_detection_comparison.jpg?t=${ts}`;
 
             downloadReportBtn.href = data.report_download_url;
             resultsSection.classList.remove('hidden');
