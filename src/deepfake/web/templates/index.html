@@ -397,80 +397,7 @@
                 </div>
             </div>
 
-            <!-- 2.5 LIVE PREPROCESSING & PER-FRAME FACE TRACKING PIPELINE -->
-            <div id="livePreprocessingSection" class="glass-panel rounded-2xl p-6 sm:p-8 bg-slate-900 text-white shadow-xl border border-slate-800 space-y-6">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-                    <div class="flex items-center space-x-3.5">
-                        <div class="w-12 h-12 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner">
-                            🔬
-                        </div>
-                        <div>
-                            <h4 class="text-lg font-extrabold text-white flex items-center space-x-2">
-                                <span>Live Preprocessing & Multimodal Biometrics</span>
-                                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">✓ Auto Live-Updated</span>
-                            </h4>
-                            <p class="text-xs text-slate-300 mt-1 leading-relaxed">
-                                Exact biometric tensors extracted from this video: 16 uniform face crops with Real/Fake boundary indicators, MediaPipe 20% margin expansion, and standardized 16 kHz audio track.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-3 w-full md:w-auto justify-end flex-shrink-0">
-                        <a id="btnLivePreprocessing" href="/preprocessing-demo" target="_blank" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-sky-500/25 flex items-center space-x-2 transition transform active:scale-95 whitespace-nowrap">
-                            <span>Open Full Faculty Preprocessing Report</span>
-                            <span>↗</span>
-                        </a>
-                    </div>
-                </div>
 
-                <!-- Tab Controls for Preprocessing Artifacts -->
-                <div class="flex flex-wrap items-center gap-2 border-b border-slate-800 pb-3">
-                    <button type="button" id="tabBtnCrops" onclick="switchPreprocTab('crops')" class="px-4 py-2 rounded-lg text-xs font-bold transition bg-sky-600 text-white shadow-sm flex items-center space-x-1.5">
-                        <span>🖼️</span>
-                        <span>16 Face Crops Montage (ViT-Base)</span>
-                    </button>
-                    <button type="button" id="tabBtnAudio" onclick="switchPreprocTab('audio')" class="px-4 py-2 rounded-lg text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center space-x-1.5">
-                        <span>🎵</span>
-                        <span>16 kHz Audio & Spectrogram (Wav2Vec2)</span>
-                    </button>
-                    <button type="button" id="tabBtnLandmarks" onclick="switchPreprocTab('landmarks')" class="px-4 py-2 rounded-lg text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center space-x-1.5">
-                        <span>📐</span>
-                        <span>Face Landmark Detection & 20% Margin</span>
-                    </button>
-                </div>
-
-                <!-- Tab 1: 16 Face Crops Montage -->
-                <div id="tabContentCrops" class="space-y-3">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-300 font-mono gap-1">
-                        <span>16 Uniform Face Crops [224&times;224 px]: <span class="text-emerald-400 font-bold">Green Border = Real</span> | <span class="text-rose-400 font-bold">Red Border = Fake</span></span>
-                        <span class="text-slate-400">ImageNet Normalized &bull; ViT-Base Patches</span>
-                    </div>
-                    <div class="w-full rounded-xl overflow-hidden bg-black border border-slate-800 p-2 shadow-inner">
-                        <img id="previewMontageImg" src="/preprocessing-demo-files/step3_16_crops_montage.png" class="w-full object-contain rounded-lg" alt="16 Face Crops Montage">
-                    </div>
-                </div>
-
-                <!-- Tab 2: Audio Waveform & Spectrogram -->
-                <div id="tabContentAudio" class="hidden space-y-3">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-300 font-mono gap-1">
-                        <span>Standardized Audio Track [64,000 Samples @ 16 kHz]: Time-Domain Waveform + 8,000 Hz Spectrogram</span>
-                        <span class="text-slate-400">Wav2Vec 2.0 Input</span>
-                    </div>
-                    <div class="w-full rounded-xl overflow-hidden bg-black border border-slate-800 p-2 shadow-inner">
-                        <img id="previewAudioImg" src="/preprocessing-demo-files/step4_audio_waveform.png" class="w-full object-contain rounded-lg" alt="16kHz Audio Waveform & Spectrogram">
-                    </div>
-                </div>
-
-                <!-- Tab 3: Landmark Detection & Margin Comparison -->
-                <div id="tabContentLandmarks" class="hidden space-y-3">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-300 font-mono gap-1">
-                        <span>MediaPipe Face Tracking: <span class="text-sky-400 font-bold">Blue = Tight Landmark Box</span> vs <span class="text-emerald-400 font-bold">Green = +20% Margin Crop</span></span>
-                        <span class="text-slate-400">Forehead & Jaw Blending Seams</span>
-                    </div>
-                    <div class="w-full rounded-xl overflow-hidden bg-black border border-slate-800 p-2 shadow-inner flex justify-center">
-                        <img id="previewLandmarksImg" src="/preprocessing-demo-files/step2_face_detection_comparison.jpg" class="max-h-96 object-contain rounded-lg" alt="MediaPipe Face Detection with Margin">
-                    </div>
-                </div>
-            </div>
 
             <!-- 3. WHY IS THIS VIDEO REAL / FAKE? (PLAIN-ENGLISH EXPLANATION) -->
             <div id="whySection" class="glass-panel rounded-2xl p-6 sm:p-8 border-l-4 transition-all bg-white">
@@ -603,6 +530,11 @@
                 <a id="downloadReportBtn" href="#" target="_blank" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-semibold text-xs flex items-center justify-center space-x-2 transition shadow-sm">
                     <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                     <span>Download Standalone Forensic Report (HTML)</span>
+                </a>
+                <a href="/preprocessing-demo" target="_blank" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-semibold text-xs flex items-center justify-center space-x-2 transition shadow-sm">
+                    <span>🔬</span>
+                    <span>View Preprocessing & Tensor Pipeline Demo</span>
+                    <span>↗</span>
                 </a>
                 <button type="button" id="resetBtn" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-semibold text-xs flex items-center justify-center space-x-2 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
@@ -770,24 +702,6 @@
             uploadPrompt.classList.remove('hidden');
         });
 
-        function switchPreprocTab(tab) {
-            const tabs = ['crops', 'audio', 'landmarks'];
-            tabs.forEach(t => {
-                const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
-                const content = document.getElementById(`tabContent${t.charAt(0).toUpperCase() + t.slice(1)}`);
-                if (t === tab) {
-                    if (btn) {
-                        btn.className = 'px-4 py-2 rounded-lg text-xs font-bold transition bg-sky-600 text-white shadow-sm flex items-center space-x-1.5';
-                    }
-                    if (content) content.classList.remove('hidden');
-                } else {
-                    if (btn) {
-                        btn.className = 'px-4 py-2 rounded-lg text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center space-x-1.5';
-                    }
-                    if (content) content.classList.add('hidden');
-                }
-            });
-        }
 
         function updatePipelineStepper(step, pct, label, statusDetail) {
             const progressBar = document.getElementById('progressBar');
@@ -973,15 +887,6 @@
             } else {
                 audioCard.classList.add('hidden');
             }
-
-            // 5. Refresh Live Preprocessing Artifacts
-            const ts = Date.now();
-            const montageImg = document.getElementById('previewMontageImg');
-            if (montageImg) montageImg.src = `/preprocessing-demo-files/step3_16_crops_montage.png?t=${ts}`;
-            const audioImg = document.getElementById('previewAudioImg');
-            if (audioImg) audioImg.src = `/preprocessing-demo-files/step4_audio_waveform.png?t=${ts}`;
-            const landmarksImg = document.getElementById('previewLandmarksImg');
-            if (landmarksImg) landmarksImg.src = `/preprocessing-demo-files/step2_face_detection_comparison.jpg?t=${ts}`;
 
             downloadReportBtn.href = data.report_download_url;
             resultsSection.classList.remove('hidden');

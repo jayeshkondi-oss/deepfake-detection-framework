@@ -158,7 +158,13 @@ def run_preprocessing_demo(video_path: str, output_dir: str = "outputs/preproces
     # -------------------------------------------------------------
     print("\n[Step 4] Demuxing audio track & windowing to 4.0s @ 16kHz...")
     audio_extractor = AudioWindowExtractor(sample_rate=16000, duration_seconds=4.0)
-    audio_tensor = audio_extractor.extract(video_path)
+    has_audio_track = True
+    try:
+        audio_tensor = audio_extractor.extract(video_path)
+    except Exception as ae:
+        print(f"    -> [!] Notice: No audio stream or extraction error: {ae}")
+        has_audio_track = False
+        audio_tensor = torch.zeros(64000, dtype=torch.float32)
 
     print(f"    -> Output Audio Shape:  {list(audio_tensor.shape)}")
     print(f"       [64,000 samples = 4.0 seconds @ 16,000 Hz Mono]")
@@ -171,15 +177,22 @@ def run_preprocessing_demo(video_path: str, output_dir: str = "outputs/preproces
 
     time_axis = np.linspace(0, 4.0, len(audio_np))
     ax1.plot(time_axis, audio_np, color="#2563eb", lw=1)
-    ax1.set_title("Time-Domain Waveform (64,000 Float Samples)")
+    if has_audio_track:
+        ax1.set_title("Time-Domain Waveform (64,000 Float Samples)")
+    else:
+        ax1.set_title("Time-Domain Waveform (No Audio Stream: 64,000 Silent Zero Samples)")
     ax1.set_xlabel("Time (seconds)")
     ax1.set_ylabel("Amplitude")
     ax1.set_ylim([-1.05, 1.05])
     ax1.grid(True, alpha=0.3)
 
-    # Spectrogram
-    ax2.specgram(audio_np, Fs=16000, NFFT=512, noverlap=256, cmap="viridis")
-    ax2.set_title("Acoustic Frequency Spectrogram (0 to 8,000 Hz)")
+    # Spectrogram (add eps to silent data to prevent log10(0) warning)
+    spec_data = audio_np if np.any(audio_np != 0) else (audio_np + 1e-7)
+    ax2.specgram(spec_data, Fs=16000, NFFT=512, noverlap=256, cmap="viridis")
+    if has_audio_track:
+        ax2.set_title("Acoustic Frequency Spectrogram (0 to 8,000 Hz)")
+    else:
+        ax2.set_title("Acoustic Frequency Spectrogram (Silent Video / Standardized Zero Floor)")
     ax2.set_xlabel("Time (seconds)")
     ax2.set_ylabel("Frequency (Hz)")
 

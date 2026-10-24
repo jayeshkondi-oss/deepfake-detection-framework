@@ -113,12 +113,17 @@ async def predict_video(
         # Automatically update preprocessing artifacts for live analysis & faculty demonstration
         try:
             from demo_preprocessing import run_preprocessing_demo
-            # Save into current report dir
-            run_preprocessing_demo(str(saved_video_path), str(vis_dir / "preprocessing"), report=report)
-            # Also update global demo dir so /preprocessing-demo shows the latest live video
-            run_preprocessing_demo(str(saved_video_path), "outputs/preprocessing_demo", report=report)
+            try:
+                run_preprocessing_demo(str(saved_video_path), str(vis_dir / "preprocessing"), report=report)
+            except Exception as pe:
+                print(f"[!] Warning: Preprocessing report export failed: {pe}")
+
+            try:
+                run_preprocessing_demo(str(saved_video_path), "outputs/preprocessing_demo", report=report)
+            except Exception as pe:
+                print(f"[!] Warning: Global preprocessing demo export failed: {pe}")
         except Exception as pe:
-            print(f"[!] Warning: Preprocessing demo export failed: {pe}")
+            print(f"[!] Warning: Preprocessing import failed: {pe}")
 
         # Encode visualizations as base64 for direct browser rendering
         vp = report.visualization_paths or {}
