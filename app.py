@@ -52,6 +52,19 @@ checkpoint_path = Path("models/checkpoints/best_model.pt")
 def load_model():
     global predictor
     print(f"[*] Initializing DeepForensics predictor on {device_name}...")
+
+    # Cloud PaaS automatic model download if checkpoint doesn't exist locally
+    if not checkpoint_path.exists():
+        model_url = os.environ.get("MODEL_URL")
+        if model_url:
+            print(f"[*] Downloading model checkpoint from MODEL_URL: {model_url}...")
+            checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
+            import urllib.request
+            urllib.request.urlretrieve(model_url, str(checkpoint_path))
+            print(f"[+] Download complete: {checkpoint_path.stat().st_size / (1024*1024):.1f} MB")
+        else:
+            print(f"[!] Notice: No checkpoint found at {checkpoint_path}. Falling back to pretrained foundation backbones.")
+
     ckpt = checkpoint_path if checkpoint_path.exists() else None
     predictor = DeepfakePredictor(
         checkpoint_path=ckpt,
@@ -62,6 +75,16 @@ def load_model():
         fake_threshold=0.65,
     )
     print("[+] Model loaded successfully and ready for inference!")
+
+
+@app.get("/api/health")
+def health_check():
+    return {
+        "status": "healthy",
+        "model_loaded": predictor is not None,
+        "device": device_name,
+        "checkpoint_present": checkpoint_path.exists(),
+    }
 
 
 @app.get("/favicon.ico", include_in_schema=False)
@@ -245,6 +268,6 @@ def serve_preprocessing_demo():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    print(f"[+] Starting DeepForensics Web Server on http://127.0.0.1:{port}")
-    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=False)
+    port = int(os.environ.get("PORT", 7860))
+    print(f"[+] Starting DeepForensics Web Server on http://0.0.0.0:{port}", flush=True)
+    uvicorn.run(app, host="0.0.0.0", port=port)

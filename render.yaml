@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: deepfake-detection-framework
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: starter
+    region: oregon
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: PORT
+        value: "10000"
+      - key: MODEL_URL
+        sync: false
